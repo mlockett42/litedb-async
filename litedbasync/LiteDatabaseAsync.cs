@@ -2,7 +2,7 @@ using System;
 using LiteDB;
 using System.Threading;
 using System.Collections.Concurrent;
-
+using litedbasync.Tasks;
 
 namespace litedbasync
 {
