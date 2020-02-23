@@ -8,19 +8,39 @@ namespace litedbasync
     public class LiteCollectionAsync<T>
     {
         private readonly ILiteCollection<T> _liteCollection;
-        internal LiteCollectionAsync(ILiteCollection<T> liteCollection)
+        private readonly LiteDatabaseAsync _liteDatabaseAsync;
+        internal LiteCollectionAsync(ILiteCollection<T> liteCollection, LiteDatabaseAsync liteDatabaseAsync)
         {
             _liteCollection = liteCollection;
+            _liteDatabaseAsync = liteDatabaseAsync;
         }
 
-        public async Task<bool> UpsertAsync(T entity)
-        {
-            return await Task.FromResult<bool>(true);
+        public LiteDatabaseAsync Database {
+            get
+            {
+                return _liteDatabaseAsync;
+            }
         }
 
-        public async Task<List<T>> ToListAsync()
+        public ILiteCollection<T> GetUnderlyingCollection()
         {
-            return new List<T>();
+            return _liteCollection;
+        }
+
+        public Task<bool> UpsertAsync(T entity)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            UpsertAsyncTask<T> task = new UpsertAsyncTask<T>(this, tcs, entity);
+            _liteDatabaseAsync.Enqueue(task);
+            return tcs.Task;
+        }
+
+        public Task<List<T>> ToListAsync()
+        {
+            TaskCompletionSource<List<T>> tcs = new TaskCompletionSource<List<T>>();
+            ToListAsyncTask<T> task = new ToListAsyncTask<T>(this, tcs);
+            _liteDatabaseAsync.Enqueue(task);
+            return tcs.Task;
         }
     }
 }
