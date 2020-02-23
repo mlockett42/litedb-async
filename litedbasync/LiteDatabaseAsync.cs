@@ -12,7 +12,8 @@ namespace litedbasync
         private readonly Thread _backgroundThread;
         ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
         ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
-        ConcurrentQueue<ILiteDbAsyncTask> _Queue = new ConcurrentQueue<ILiteDbAsyncTask>();
+        ConcurrentQueue<ILiteDbAsyncTask> _queue = new ConcurrentQueue<ILiteDbAsyncTask>();
+        private readonly object _queueLock = new object();
         public LiteDatabaseAsync(string connectionString)
         {
             _liteDB = new LiteDatabase(connectionString);
@@ -31,23 +32,26 @@ namespace litedbasync
                 {
                     return;
                 }
-                if (_Queue.TryDequeue(out task))
+                lock (_queueLock)
                 {
-                    task.Execute();
+                    if (!_queue.TryDequeue(out task))
+                    {
+                        // reset when queue is empty
+                        _newTaskArrived.Reset();
+                        continue;
+                    }
                 }
-                else
-                {
-                    // reset when queue is empty
-                    _newTaskArrived.Reset();
-                    //break;
-                }            
+                task.Execute();          
             }
         }
 
         internal void Enqueue(ILiteDbAsyncTask task)
         {
-            _Queue.Enqueue(task);
-            _newTaskArrived.Set();
+            lock (_queueLock)
+            {
+                _queue.Enqueue(task);
+                _newTaskArrived.Set();
+            }
         }
 
         public LiteCollectionAsync<T> GetCollection<T>()
