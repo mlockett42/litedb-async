@@ -12,7 +12,7 @@ namespace litedbasync
         private readonly Thread _backgroundThread;
         ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
         ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
-        ConcurrentQueue<ILiteDbAsyncTask> _queue = new ConcurrentQueue<ILiteDbAsyncTask>();
+        ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
         public LiteDatabaseAsync(string connectionString)
         {
@@ -23,7 +23,7 @@ namespace litedbasync
 
         private void BackgroundLoop()
         {
-            ILiteDbAsyncTask task;
+            LiteAsyncDelegate function;
             var waitHandles = new WaitHandle[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
             while (true)
             {
@@ -34,22 +34,22 @@ namespace litedbasync
                 }
                 lock (_queueLock)
                 {
-                    if (!_queue.TryDequeue(out task))
+                    if (!_queue.TryDequeue(out function))
                     {
                         // reset when queue is empty
                         _newTaskArrived.Reset();
                         continue;
                     }
                 }
-                task.Execute();          
+                function();
             }
         }
 
-        internal void Enqueue(ILiteDbAsyncTask task)
+        internal void Enqueue(LiteAsyncDelegate function)
         {
             lock (_queueLock)
             {
-                _queue.Enqueue(task);
+                _queue.Enqueue(function);
                 _newTaskArrived.Set();
             }
         }

@@ -31,24 +31,37 @@ namespace litedbasync
         public Task<bool> UpsertAsync(T entity)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            UpsertAsyncTask<T> task = new UpsertAsyncTask<T>(this, tcs, entity);
-            _liteDatabaseAsync.Enqueue(task);
+            //UpsertAsyncTask<T> task = new UpsertAsyncTask<T>(this, tcs, entity);
+            _liteDatabaseAsync.Enqueue(() => {
+                tcs.SetResult(GetUnderlyingCollection().Upsert(entity));
+            });
             return tcs.Task;
         }
 
         public Task<List<T>> ToListAsync()
         {
             TaskCompletionSource<List<T>> tcs = new TaskCompletionSource<List<T>>();
-            ToListAsyncTask<T> task = new ToListAsyncTask<T>(this, tcs);
-            _liteDatabaseAsync.Enqueue(task);
+            //ToListAsyncTask<T> task = new ToListAsyncTask<T>(this, tcs);
+            _liteDatabaseAsync.Enqueue(() => {
+                tcs.SetResult(GetUnderlyingCollection().Query().ToList());
+            });
             return tcs.Task;
         }
 
         public Task<BsonValue> InsertAsync(T entity)
         {
             TaskCompletionSource<BsonValue> tcs = new TaskCompletionSource<BsonValue>();
-            InsertAsyncTask<T> task = new InsertAsyncTask<T>(this, tcs, entity);
-            _liteDatabaseAsync.Enqueue(task);
+            //InsertAsyncTask<T> task = new InsertAsyncTask<T>(this, tcs, entity);
+            _liteDatabaseAsync.Enqueue(() => {
+                try
+                {
+                    tcs.SetResult(GetUnderlyingCollection().Insert(entity));
+                }
+                catch (LiteException ex)
+                {
+                    tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
+                }
+            });
             return tcs.Task;
         }
     }
