@@ -43,5 +43,13 @@ namespace litedbasync
             _liteDatabaseAsync.Enqueue(task);
             return tcs.Task;
         }
+
+        public Task<BsonValue> InsertAsync(T entity)
+        {
+            TaskCompletionSource<BsonValue> tcs = new TaskCompletionSource<BsonValue>();
+            InsertAsyncTask<T> task = new InsertAsyncTask<T>(this, tcs, entity);
+            _liteDatabaseAsync.Enqueue(task);
+            return tcs.Task;
+        }
     }
 }
