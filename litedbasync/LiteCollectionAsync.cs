@@ -2,7 +2,6 @@ using System;
 using LiteDB;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using litedbasync.Tasks;
 
 namespace litedbasync
 {
@@ -30,8 +29,7 @@ namespace litedbasync
 
         public Task<bool> UpsertAsync(T entity)
         {
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            //UpsertAsyncTask<T> task = new UpsertAsyncTask<T>(this, tcs, entity);
+            var tcs = new TaskCompletionSource<bool>();
             _liteDatabaseAsync.Enqueue(tcs, () => {
                 tcs.SetResult(GetUnderlyingCollection().Upsert(entity));
             });
@@ -40,8 +38,7 @@ namespace litedbasync
 
         public Task<List<T>> ToListAsync()
         {
-            TaskCompletionSource<List<T>> tcs = new TaskCompletionSource<List<T>>();
-            //ToListAsyncTask<T> task = new ToListAsyncTask<T>(this, tcs);
+            var tcs = new TaskCompletionSource<List<T>>();
             _liteDatabaseAsync.Enqueue(tcs, () => {
                 tcs.SetResult(GetUnderlyingCollection().Query().ToList());
             });
@@ -50,8 +47,7 @@ namespace litedbasync
 
         public Task<BsonValue> InsertAsync(T entity)
         {
-            TaskCompletionSource<BsonValue> tcs = new TaskCompletionSource<BsonValue>();
-            //InsertAsyncTask<T> task = new InsertAsyncTask<T>(this, tcs, entity);
+            var tcs = new TaskCompletionSource<BsonValue>();
             _liteDatabaseAsync.Enqueue(tcs, () => {
                 tcs.SetResult(GetUnderlyingCollection().Insert(entity));
             });
