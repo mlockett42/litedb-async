@@ -3,6 +3,7 @@ using LiteDB;
 using System.Threading;
 using System.Collections.Concurrent;
 using litedbasync.Tasks;
+using System.Threading.Tasks;
 
 namespace litedbasync
 {
@@ -45,11 +46,20 @@ namespace litedbasync
             }
         }
 
-        internal void Enqueue(LiteAsyncDelegate function)
+        internal void Enqueue<T>(TaskCompletionSource<T> tcs, LiteAsyncDelegate function)
         {
             lock (_queueLock)
             {
-                _queue.Enqueue(function);
+                _queue.Enqueue(() => {
+                    try
+                    {
+                        function();
+                    }
+                    catch (LiteException ex)
+                    {
+                        tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
+                    }
+                    });
                 _newTaskArrived.Set();
             }
         }
