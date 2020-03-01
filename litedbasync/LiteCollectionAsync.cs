@@ -36,15 +36,6 @@ namespace litedbasync
             return tcs.Task;
         }
 
-        public Task<List<T>> ToListAsync()
-        {
-            var tcs = new TaskCompletionSource<List<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Query().ToList());
-            });
-            return tcs.Task;
-        }
-
         public Task<BsonValue> InsertAsync(T entity)
         {
             var tcs = new TaskCompletionSource<BsonValue>();
@@ -52,6 +43,11 @@ namespace litedbasync
                 tcs.SetResult(GetUnderlyingCollection().Insert(entity));
             });
             return tcs.Task;
+        }
+
+        public LiteQueryableAsync<T> QueryAsync()
+        {
+            return new LiteQueryableAsync<T>(GetUnderlyingCollection().Query(), _liteDatabaseAsync);
         }
     }
 }
