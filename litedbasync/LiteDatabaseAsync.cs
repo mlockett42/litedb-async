@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace litedbasync
 {
-    public class LiteDatabaseAsync
+    public class LiteDatabaseAsync : IDisposable
     {
         private readonly LiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
@@ -71,6 +71,22 @@ namespace litedbasync
         public LiteCollectionAsync<T> GetCollection<T>(string name)
         {
             return new LiteCollectionAsync<T>(_liteDB.GetCollection<T>(name), this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {            
+                _shouldTerminate.Set();
+                _backgroundThread.Join();
+                _liteDB.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
