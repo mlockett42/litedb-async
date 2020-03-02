@@ -45,7 +45,7 @@ namespace litedbasync
             return tcs.Task;
         }
 
-        public LiteQueryableAsync<T> QueryAsync()
+        public LiteQueryableAsync<T> Query()
         {
             return new LiteQueryableAsync<T>(GetUnderlyingCollection().Query(), _liteDatabaseAsync);
         }
