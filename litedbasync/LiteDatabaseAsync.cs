@@ -3,6 +3,7 @@ using LiteDB;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace litedbasync
 {
@@ -17,6 +18,17 @@ namespace litedbasync
         public LiteDatabaseAsync(string connectionString)
         {
             _liteDB = new LiteDatabase(connectionString);
+            _backgroundThread = new Thread(() => BackgroundLoop() );
+            _backgroundThread.Start();
+        }
+
+        /// <summary>
+        /// Starts LiteDB database using a generic Stream implementation (mostly MemoryStrem).
+        /// Use another MemoryStrem as LOG file.
+        /// </summary>
+        public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null)
+        {
+            _liteDB = new LiteDatabase(stream, mapper);
             _backgroundThread = new Thread(() => BackgroundLoop() );
             _backgroundThread.Start();
         }
