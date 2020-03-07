@@ -23,7 +23,7 @@ namespace litedbasync
         /// <summary>
         /// Insert or Update all documents
         /// </summary>
-        public Task<int> Upsert(IEnumerable<T> entities)
+        public Task<int> UpsertAsync(IEnumerable<T> entities)
         {
             var tcs = new TaskCompletionSource<int>();
             _liteDatabaseAsync.Enqueue(tcs, () => {
@@ -35,7 +35,7 @@ namespace litedbasync
         /// <summary>
         /// Insert or Update a document in this collection.
         /// </summary>
-        public Task<bool> Upsert(BsonValue id, T entity)
+        public Task<bool> UpsertAsync(BsonValue id, T entity)
         {
             var tcs = new TaskCompletionSource<bool>();
             _liteDatabaseAsync.Enqueue(tcs, () => {
