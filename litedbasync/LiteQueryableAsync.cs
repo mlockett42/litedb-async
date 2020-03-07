@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace litedbasync
+namespace LiteDB.Async
 {
     public class LiteQueryableAsync<T> : ILiteQueryableAsync<T>
     {

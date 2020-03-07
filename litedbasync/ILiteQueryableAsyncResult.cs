@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using LiteDB;
 
-namespace litedbasync
+namespace LiteDB.Async
 {
     public interface ILiteQueryableAsyncResult<T>
     {

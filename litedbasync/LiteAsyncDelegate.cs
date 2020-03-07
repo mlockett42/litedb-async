@@ -1,4 +1,4 @@
-namespace litedbasync
+namespace LiteDB.Async
 {
     public delegate void LiteAsyncDelegate();
 }

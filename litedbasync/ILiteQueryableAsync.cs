@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using LiteDB;
 
-namespace litedbasync
+namespace LiteDB.Async
 {
     public interface ILiteQueryableAsync<T> : ILiteQueryableAsyncResult<T>
     {

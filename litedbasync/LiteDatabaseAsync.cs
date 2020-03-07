@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace litedbasync
+namespace LiteDB.Async
 {
     public class LiteDatabaseAsync : IDisposable
     {
