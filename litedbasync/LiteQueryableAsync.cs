@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace litedbasync
 {
-    public class LiteQueryableAsync<T> : ILiteQueryableAsyncResult<T>
+    public class LiteQueryableAsync<T> : ILiteQueryableAsync<T>
     {
         private readonly ILiteQueryable<T> _wrappedQuery;
         private readonly LiteDatabaseAsync _liteDatabaseAsync;
@@ -24,7 +24,7 @@ namespace litedbasync
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
-        public LiteQueryableAsync<T> Include<K>(Expression<Func<T, K>> path)
+        public ILiteQueryableAsync<T> Include<K>(Expression<Func<T, K>> path)
         {
             // Note the wrapped function in LiteDB mutates the ILiteQueryable object
             _wrappedQuery.Include(path);
@@ -34,7 +34,7 @@ namespace litedbasync
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
-        public LiteQueryableAsync<T> Include(BsonExpression path)
+        public ILiteQueryableAsync<T> Include(BsonExpression path)
         {
             _wrappedQuery.Include(path);
             return this;
@@ -43,7 +43,7 @@ namespace litedbasync
         /// <summary>
         /// Load cross reference documents from path expression (DbRef reference)
         /// </summary>
-        public LiteQueryableAsync<T> Include(List<BsonExpression> paths)
+        public ILiteQueryableAsync<T> Include(List<BsonExpression> paths)
         {
             _wrappedQuery.Include(paths);
             return this;
@@ -56,7 +56,7 @@ namespace litedbasync
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
-        public LiteQueryableAsync<T> Where(BsonExpression predicate)
+        public ILiteQueryableAsync<T> Where(BsonExpression predicate)
         {
             _wrappedQuery.Where(predicate);
             return this;
@@ -65,7 +65,7 @@ namespace litedbasync
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
-        public LiteQueryableAsync<T> Where(string predicate, BsonDocument parameters)
+        public ILiteQueryableAsync<T> Where(string predicate, BsonDocument parameters)
         {
             _wrappedQuery.Where(predicate, parameters);
             return this;
@@ -74,7 +74,7 @@ namespace litedbasync
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
-        public LiteQueryableAsync<T> Where(string predicate, params BsonValue[] args)
+        public ILiteQueryableAsync<T> Where(string predicate, params BsonValue[] args)
         {
             _wrappedQuery.Where(predicate, args);
             return this;
@@ -83,7 +83,7 @@ namespace litedbasync
         /// <summary>
         /// Filters a sequence of documents based on a predicate expression
         /// </summary>
-        public LiteQueryableAsync<T> Where(Expression<Func<T, bool>> predicate)
+        public ILiteQueryableAsync<T> Where(Expression<Func<T, bool>> predicate)
         {
             _wrappedQuery.Where(predicate);
             return this;
@@ -96,7 +96,7 @@ namespace litedbasync
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
-        public LiteQueryableAsync<T> OrderBy(BsonExpression keySelector, int order = Query.Ascending)
+        public ILiteQueryableAsync<T> OrderBy(BsonExpression keySelector, int order = Query.Ascending)
         {
             _wrappedQuery.OrderBy(keySelector, order);
             return this;
@@ -105,7 +105,7 @@ namespace litedbasync
         /// <summary>
         /// Sort the documents of resultset in ascending (or descending) order according to a key (support only one OrderBy)
         /// </summary>
-        public LiteQueryableAsync<T> OrderBy<K>(Expression<Func<T, K>> keySelector, int order = Query.Ascending)
+        public ILiteQueryableAsync<T> OrderBy<K>(Expression<Func<T, K>> keySelector, int order = Query.Ascending)
         {
             _wrappedQuery.OrderBy(keySelector, order);
             return this;
@@ -114,7 +114,7 @@ namespace litedbasync
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
-        public LiteQueryableAsync<T> OrderByDescending(BsonExpression keySelector)
+        public ILiteQueryableAsync<T> OrderByDescending(BsonExpression keySelector)
         {
             _wrappedQuery.OrderByDescending(keySelector);
             return this;
@@ -123,7 +123,7 @@ namespace litedbasync
         /// <summary>
         /// Sort the documents of resultset in descending order according to a key (support only one OrderBy)
         /// </summary>
-        public LiteQueryableAsync<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector)
+        public ILiteQueryableAsync<T> OrderByDescending<K>(Expression<Func<T, K>> keySelector)
         {
             _wrappedQuery.OrderByDescending(keySelector);
             return this;
@@ -136,7 +136,7 @@ namespace litedbasync
         /// <summary>
         /// Groups the documents of resultset according to a specified key selector expression (support only one GroupBy)
         /// </summary>
-        public LiteQueryableAsync<T> GroupBy(BsonExpression keySelector)
+        public ILiteQueryableAsync<T> GroupBy(BsonExpression keySelector)
         {
             _wrappedQuery.GroupBy(keySelector);
             return this;
@@ -149,7 +149,7 @@ namespace litedbasync
         /// <summary>
         /// Filter documents after group by pipe according to predicate expression (requires GroupBy and support only one Having)
         /// </summary>
-        public LiteQueryableAsync<T> Having(BsonExpression predicate)
+        public ILiteQueryableAsync<T> Having(BsonExpression predicate)
         {
             _wrappedQuery.Having(predicate);
             return this;
@@ -159,16 +159,13 @@ namespace litedbasync
 
         #region Select
 
-/*
         /// <summary>
         /// Transform input document into a new output document. Can be used with each document, group by or all source
         /// </summary>
-        public ILiteQueryableResult<BsonDocument> Select(BsonExpression selector)
+        public ILiteQueryableAsyncResult<BsonDocument> Select(BsonExpression selector)
         {
-            _query.Select = selector;
-
-            return new LiteQueryable<BsonDocument>(_engine, _mapper, _collection, _query);
-        }*/
+            return new LiteQueryableAsync<BsonDocument>((ILiteQueryable<BsonDocument>)_wrappedQuery.Select(selector), _liteDatabaseAsync);
+        }
 
         /// <summary>
         /// Project each document of resultset into a new document/value based on selector expression
