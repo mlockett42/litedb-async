@@ -75,6 +75,7 @@ namespace litedbasync
             }
         }
 
+        #region Collections
         public LiteCollectionAsync<T> GetCollection<T>()
         {
             return this.GetCollection<T>(null);
@@ -84,6 +85,17 @@ namespace litedbasync
         {
             return new LiteCollectionAsync<T>(_liteDB.GetCollection<T>(name), this);
         }
+
+        /// <summary>
+        /// Get a collection using a generic BsonDocument. If collection does not exits, create a new one.
+        /// </summary>
+        /// <param name="name">Collection name (case insensitive)</param>
+        /// <param name="autoId">Define autoId data type (when document contains no _id field)</param>
+        public LiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId)
+        {
+            return new LiteCollectionAsync<BsonDocument>(_liteDB.GetCollection(name, autoId), this);
+        }
+        #endregion
 
         protected virtual void Dispose(bool disposing)
         {
