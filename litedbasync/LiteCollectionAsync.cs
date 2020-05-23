@@ -1,11 +1,8 @@
-using System;
-using LiteDB;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
 namespace LiteDB.Async
 {
+    /// <summary>
+    /// Wraps a LiteCollection which will only be queried in the background thread
+    /// </summary>
     public partial class LiteCollectionAsync<T>
     {
         private readonly ILiteCollection<T> _liteCollection;
@@ -16,6 +13,9 @@ namespace LiteDB.Async
             _liteDatabaseAsync = liteDatabaseAsync;
         }
 
+        /// <summary>
+        /// The database this collection belongs to
+        /// </summary>
         public LiteDatabaseAsync Database {
             get
             {
@@ -23,11 +23,17 @@ namespace LiteDB.Async
             }
         }
 
+        /// <summary>
+        /// The underlying ILiteCollection we wrap
+        /// </summary>
         public ILiteCollection<T> GetUnderlyingCollection()
         {
             return _liteCollection;
         }
 
+        /// <summary>
+        /// Return a new LiteQueryableAsync to build more complex queries
+        /// </summary>
         public LiteQueryableAsync<T> Query()
         {
             return new LiteQueryableAsync<T>(GetUnderlyingCollection().Query(), _liteDatabaseAsync);

@@ -1,7 +1,4 @@
 using System;
-using LiteDB;
-using System.Threading;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -216,6 +213,7 @@ namespace LiteDB.Async
         #region Execute Result
 
         /*
+        TODO: Not sure if this should be implemented
         /// <summary>
         /// Execute query and returns resultset as generic BsonDataReader
         /// </summary>
@@ -278,6 +276,7 @@ namespace LiteDB.Async
         /// <summary>
         /// Get execution plan over current query definition to see how engine will execute query
         /// </summary>
+        // TODO: Not sure if this should be implemented
         /*public BsonDocument GetPlan()
         {
             _query.ExplainPlan = true;
@@ -345,7 +344,7 @@ namespace LiteDB.Async
         #region Execute Count
 
         /// <summary>
-        /// Execute Count methos in filter query
+        /// Execute Count method in filter query
         /// </summary>
         public Task<int> CountAsync()
         {

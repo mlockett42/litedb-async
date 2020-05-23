@@ -1,5 +1,8 @@
 namespace LiteDB.Async
 {
+    /// <summary>
+    /// An exception was raised by the background thread. Throws this, the original exception is the InnerException
+    /// </summary>
     public class LiteAsyncException : System.Exception
     {
         public LiteAsyncException() : base() { }

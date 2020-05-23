@@ -1,5 +1,4 @@
 using System;
-using LiteDB;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -15,6 +14,9 @@ namespace LiteDB.Async
         ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
         ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
+        /// <summary>
+        /// Starts LiteDB database using a connection string for file system database
+        /// </summary>
         public LiteDatabaseAsync(string connectionString)
         {
             _liteDB = new LiteDatabase(connectionString);
@@ -81,6 +83,10 @@ namespace LiteDB.Async
             return this.GetCollection<T>(null);
         }
 
+        /// <summary>
+        /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
+        /// </summary>
+        /// <param name="name">Collection name (case insensitive)</param>
         public LiteCollectionAsync<T> GetCollection<T>(string name)
         {
             return new LiteCollectionAsync<T>(_liteDB.GetCollection<T>(name), this);
