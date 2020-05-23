@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>litedbasynctest</AssemblyName>
+    <RootNamespace>litedbasynctest</RootNamespace>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\litedbasync\litedbasync.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Utils\Json\person.json" />
+    <None Remove="Utils\Json\zip.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Utils\Json\person.json" />
+    <EmbeddedResource Include="Utils\Json\zip.json" />
+  </ItemGroup>
+</Project>

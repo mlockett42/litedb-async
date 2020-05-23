@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "litedbasynctest", "litedbasynctest\litedbasynctest.csproj", "{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "litedb-async", "litedb-async", "{3E105BFE-5812-40A9-BF98-8BEDAAFC1876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "litedbasync", "litedbasync\litedbasync.csproj", "{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|x64.Build.0 = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Debug|x86.Build.0 = Debug|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|x64.ActiveCfg = Release|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|x64.Build.0 = Release|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|x86.ActiveCfg = Release|Any CPU
+		{4DA93B00-6913-4F9A-BAF3-6A18109E6F72}.Release|x86.Build.0 = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|x64.Build.0 = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DF52CFCB-1BF4-415F-9B40-59F605D70C2B} = {3E105BFE-5812-40A9-BF98-8BEDAAFC1876}
+	EndGlobalSection
+EndGlobal
