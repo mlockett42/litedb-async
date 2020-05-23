@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
+    <PackageId>LiteDB.Async</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Mark Lockett</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>LiteDB-Async</Title>
+    <Copyright>Copyright (c) 2020 Licensed by Apache 2.0</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl></RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
