@@ -1,5 +1,8 @@
 # litedb-async
 
+Available on nuget.
+<https://www.nuget.org/packages/LiteDB.Async/>
+
 ## Building
 
 To build the solution
