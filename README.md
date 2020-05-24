@@ -80,6 +80,7 @@ From Collections
 Query, CountAsync, LongCountAsync, ExistsAsync, MinAsync, MaxAsync, DeleteAsync, DeleteManyAsync, FindAsync, FindByIdAsync, FindOneAsync, FindAllAsync, Include, EnsureIndexAsync, InsertAsync, UpdateAsync, UpdateManyAsync, UpsertAsync
 
 From Query
+
 Include, Where, OrderBy, OrderByDescending, GroupBy, Select, Limit, Skip, Offset, ForUpdate, ToDocumentsAsync, ToEnumerableAsync, ToListAsync, ToArrayAsync, FirstAsync, FirstOrDefaultAsync, SingleAsync, SingleOrDefaultAsync, CountAsync, LongCountAsync, ExistsAsync
 
 ### How does it work?
