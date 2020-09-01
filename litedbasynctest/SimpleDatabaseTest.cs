@@ -1,6 +1,5 @@
 using System;
 using Xunit;
-using LiteDB.Async;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -82,7 +81,7 @@ namespace LiteDB.Async.Test
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-            {      
+            {
                 _db.Dispose();
                 File.Delete(_databasePath);
             }
