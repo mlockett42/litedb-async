@@ -62,7 +62,7 @@ namespace LiteDB.Async.Test
                 await col.EnsureIndexAsync(x => x.Customers.Select(z => z.Name));
 
                 // Query.EQ("Keys", 2)
-                (await col.CountAsync(Query.EQ("Keys", 2))).Should().Be(2);
+                (await col.CountAsync(Query.Any().EQ("Keys", 2))).Should().Be(2);
                 (await col.CountAsync(x => x.Keys.Contains(2))).Should().Be(2);
 
                 (await col.CountAsync(Query.StartsWith("Customers[*].Name ANY", "Ana"))).Should().Be(2);
