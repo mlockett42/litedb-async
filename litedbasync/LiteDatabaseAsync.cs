@@ -10,17 +10,18 @@ namespace LiteDB.Async
     {
         private readonly LiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
-        ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
-        ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
-        ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
+        private readonly ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
+        private readonly ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
+        private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
+
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
         /// </summary>
         public LiteDatabaseAsync(string connectionString)
         {
             _liteDB = new LiteDatabase(connectionString);
-            _backgroundThread = new Thread(() => BackgroundLoop() );
+            _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
 
@@ -31,14 +32,38 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null)
         {
             _liteDB = new LiteDatabase(stream, mapper);
-            _backgroundThread = new Thread(() => BackgroundLoop() );
+            _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
+        }
+
+        public bool UtcDate
+        {
+            get => _liteDB.UtcDate;
+            set => _liteDB.UtcDate = value;
+        }
+
+        public int CheckpointSize
+        {
+            get => _liteDB.CheckpointSize;
+            set => _liteDB.CheckpointSize = value;
+        }
+
+        public int UserVersion
+        {
+            get => _liteDB.UserVersion;
+            set => _liteDB.UserVersion = value;
+        }
+
+        public TimeSpan Timeout
+        {
+            get => _liteDB.Timeout;
+            set => _liteDB.Timeout = value;
         }
 
         private void BackgroundLoop()
         {
-            LiteAsyncDelegate function;
-            var waitHandles = new WaitHandle[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
+            var waitHandles = new[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
+
             while (true)
             {
                 var triggerEvent = WaitHandle.WaitAny(waitHandles);
@@ -46,6 +71,9 @@ namespace LiteDB.Async
                 {
                     return;
                 }
+
+                LiteAsyncDelegate function;
+
                 lock (_queueLock)
                 {
                     if (!_queue.TryDequeue(out function))
@@ -55,6 +83,7 @@ namespace LiteDB.Async
                         continue;
                     }
                 }
+
                 function();
             }
         }
@@ -63,7 +92,8 @@ namespace LiteDB.Async
         {
             lock (_queueLock)
             {
-                _queue.Enqueue(() => {
+                _queue.Enqueue(() =>
+                {
                     try
                     {
                         function();
@@ -72,7 +102,7 @@ namespace LiteDB.Async
                     {
                         tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
                     }
-                    });
+                });
                 _newTaskArrived.Set();
             }
         }
@@ -106,7 +136,7 @@ namespace LiteDB.Async
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-            {            
+            {
                 _shouldTerminate.Set();
                 _backgroundThread.Join();
                 _liteDB.Dispose();
