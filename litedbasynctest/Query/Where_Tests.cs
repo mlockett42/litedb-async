@@ -3,6 +3,7 @@ using System.Linq;
 using Xunit;
 using System.Threading.Tasks;
 using LiteDB.Async;
+using LiteDB;
 
 namespace Tests.LiteDB.Async
 {
@@ -23,6 +24,22 @@ namespace Tests.LiteDB.Async
 
             var r1 = await _collection.Query()
                 .Where(x => x.Address.State == "FL")
+                .ToArrayAsync();
+
+            AssertEx.ArrayEqual(r0, r1, true);
+        }
+
+        [Fact]
+        public async Task Query_Where_With_BsonExpression()
+        {
+            var r0 = local
+                .Where(x => x.Address.State == "FL")
+                .ToArray();
+
+            var expr = BsonExpression.Create("$.Address.State = \"FL\"");
+
+            var r1 = await _collection.Query()
+                .Where(expr)
                 .ToArrayAsync();
 
             AssertEx.ArrayEqual(r0, r1, true);
