@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LiteDB.Async;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class DateTime_Tests : IDisposable
     {

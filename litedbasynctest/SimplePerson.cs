@@ -3,7 +3,7 @@ using Xunit;
 using LiteDB.Async;
 using System.IO;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class SimplePerson
     {

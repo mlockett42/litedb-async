@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LiteDB.Async;
 using LiteDB;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class IndexSortAndFilterTest : IDisposable
     {

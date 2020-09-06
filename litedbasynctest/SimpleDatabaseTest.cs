@@ -2,8 +2,9 @@ using System;
 using Xunit;
 using System.IO;
 using System.Threading.Tasks;
+using LiteDB.Async;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class SimpleDatabaseTest : IDisposable
     {

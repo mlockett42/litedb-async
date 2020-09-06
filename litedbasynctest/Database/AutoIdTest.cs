@@ -1,12 +1,12 @@
 using System;
 using Xunit;
-using LiteDB.Async;
 using System.IO;
 using System.Threading.Tasks;
-using LiteDB;
 using FluentAssertions;
+using LiteDB;
+using LiteDB.Async;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class AutoIdTest
     {

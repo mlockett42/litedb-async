@@ -4,7 +4,7 @@ using LiteDB.Async;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class ConnectionStringTest : IDisposable
     {

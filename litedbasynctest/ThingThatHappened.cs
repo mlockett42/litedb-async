@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class ThingThatHappened
     {

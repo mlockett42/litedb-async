@@ -6,7 +6,7 @@ using Xunit;
 using System.Threading.Tasks;
 using LiteDB.Async;
 
-namespace LiteDB.Async.Test
+namespace Tests.LiteDB.Async
 {
     public class MissingIdDocTest
     {
