@@ -20,6 +20,22 @@ To run a single specific unit test
 To build for nuget
 `dotnet pack --configuration Release`
 
+Don't forget to bump the version number in the litedbasync.csproj project file
+
+It will build a nupkg file.
+
+Next log in to nuget.org and upload the nupkg file which was just built.
+
+Done the package will be available to the world within a few minutes.
+
+### Command line package build instructions
+
+https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli
+
+### Web Upload instructions
+
+https://docs.microsoft.com/en-us/nuget/nuget-org/publish-a-package
+
 ## VS Code config
 
 When checking out for the first time copy the `.vscode/launch.json.default` and `.vscode/tasks.json.default` to `.vscode/launch.json` and `.vscode/tasks.json`.
