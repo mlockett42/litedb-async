@@ -150,7 +150,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteStorageAsync<TFileId> GetStorage<TFileId>(string filesCollection = "_files", string chunksCollection = "_chunks")
         {
-            return new LiteStorageAsync<TFileId>(new LiteStorage<TFileId>(_liteDB, filesCollection, chunksCollection), this, filesCollection, chunksCollection);
+            return new LiteStorageAsync<TFileId>(this, _liteDB, filesCollection, chunksCollection);
         }
 
         #endregion

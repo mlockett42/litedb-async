@@ -11,9 +11,9 @@ namespace LiteDB.Async
         private readonly ILiteStorage<TFileId> _wrappedStorage;
         private readonly LiteDatabaseAsync _liteDatabaseAsync;
 
-        public LiteStorageAsync(ILiteStorage<TFileId> wrappedStorage, LiteDatabaseAsync liteDatabaseAsync, string filesCollection = "_files", string chunksCollection = "_chunks")
+        public LiteStorageAsync(LiteDatabaseAsync liteDatabaseAsync, ILiteDatabase liteDb, string filesCollection = "_files", string chunksCollection = "_chunks")
         {
-            _wrappedStorage = wrappedStorage;
+            _wrappedStorage = new LiteStorage<TFileId>(liteDb, filesCollection, chunksCollection);
             _liteDatabaseAsync = liteDatabaseAsync;
         }
 
