@@ -133,6 +133,27 @@ namespace LiteDB.Async
         }
         #endregion
 
+        #region FileStorage
+
+        private ILiteStorageAsync<string> _fs = null;
+
+        /// <summary>
+        /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
+        /// </summary>
+        public ILiteStorageAsync<string> FileStorage
+        {
+            get { return _fs ?? (_fs = this.GetStorage<string>()); }
+        }
+
+        /// <summary>
+        /// Get new instance of Storage using custom FileId type, custom "_files" collection name and custom "_chunks" collection. LiteDB support multiples file storages (using different files/chunks collection names)
+        /// </summary>
+        public ILiteStorageAsync<TFileId> GetStorage<TFileId>(string filesCollection = "_files", string chunksCollection = "_chunks")
+        {
+            return new LiteStorageAsync<TFileId>(new LiteStorage<TFileId>(_liteDB, filesCollection, chunksCollection), this, filesCollection, chunksCollection);
+        }
+
+        #endregion
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
