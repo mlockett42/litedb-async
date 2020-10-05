@@ -1,13 +1,16 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
 using System.Threading.Tasks;
 using LiteDB.Async;
+using LiteDB;
+using Moq;
 
 namespace Tests.LiteDB.Async
 {
-    public class Crud_Tests
+    public class Precreated_Database_Tests
     {
         #region Model 
 
@@ -22,7 +25,8 @@ namespace Tests.LiteDB.Async
         [Fact]
         public async Task Insert_With_AutoId()
         {
-            using (var db = new LiteDatabaseAsync(new MemoryStream()))
+            using (var wrappedDb = new LiteDatabase(new MemoryStream()) )
+            using (var db = new LiteDatabaseAsync(wrappedDb))
             {
                 var users = db.GetCollection<User>("users");
 
@@ -55,25 +59,26 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public async Task Delete_Many()
+        public void Disposes_Wrapped_LiteDb()
         {
-            using (var db = new LiteDatabaseAsync(new MemoryStream()))
+            var mockWrappedDb = new Mock<ILiteDatabase>();
+            using (var db = new LiteDatabaseAsync(mockWrappedDb.Object))
             {
-                var users = db.GetCollection<User>("users");
-
-                var u1 = new User { Id = 1, Name = "John" };
-                var u2 = new User { Id = 2, Name = "Zarlos" };
-                var u3 = new User { Id = 3, Name = "Ana" };
-
-                await users.InsertAsync(new User[] { u1, u2, u3 });
-
-                var ids = new int[] { 1, 2, 3 };
-
-                await users.DeleteManyAsync(x => ids.Contains(x.Id));
-
-                (await users.CountAsync()).Should().Be(0);
-
+                // Do nothing
             }
+            mockWrappedDb.Verify(x => x.Dispose(), Times.Once);
+        }
+
+        [Fact]
+        public void Dont_Dispose_Wrapped_LiteDb()
+        // Don't dispose of the wrapped LiteDB instance if the correct parameter is passed in
+        {
+            var mockWrappedDb = new Mock<ILiteDatabase>();
+            using (var db = new LiteDatabaseAsync(mockWrappedDb.Object, false))
+            {
+                // Do nothing
+            }
+            mockWrappedDb.Verify(x => x.Dispose(), Times.Never);
         }
     }
 }

@@ -8,12 +8,13 @@ namespace LiteDB.Async
 {
     public class LiteDatabaseAsync : IDisposable
     {
-        private readonly LiteDatabase _liteDB;
+        private readonly ILiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
         private readonly ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
         private readonly ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
         private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
+        private readonly bool _disposeOfWrappedDatabase = true;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -39,6 +40,18 @@ namespace LiteDB.Async
             _backgroundThread.Start();
         }
 
+        /// <summary>
+        /// Starts LiteDB database wrapping the passed in LiteDatabase instance
+        /// </summary>
+        /// <param name="wrappedDatabase">ILiteDatabase reference </param>
+        /// <param name="bool">disposeOfWrappedDatabase iff true dispose of the wrappedDatabase when this object is disposed</param>
+        public LiteDatabaseAsync(ILiteDatabase wrappedDatabase, bool disposeOfWrappedDatabase = true)
+        {
+            _liteDB = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
+            _backgroundThread = new Thread(BackgroundLoop);
+            _backgroundThread.Start();
+            _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
+        }
         public bool UtcDate
         {
             get => _liteDB.UtcDate;
@@ -163,7 +176,10 @@ namespace LiteDB.Async
             {
                 _shouldTerminate.Set();
                 _backgroundThread.Join();
-                _liteDB.Dispose();
+                if (_disposeOfWrappedDatabase)
+                {
+                    _liteDB.Dispose();
+                }
             }
         }
 
