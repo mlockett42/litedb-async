@@ -3,6 +3,7 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections.Generic;
 
 namespace LiteDB.Async
 {
@@ -15,6 +16,8 @@ namespace LiteDB.Async
         private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
         private readonly object _queueLock = new object();
         private readonly bool _disposeOfWrappedDatabase = true;
+        private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
+        private static object _hashSetLock = new object();
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -48,6 +51,12 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(ILiteDatabase wrappedDatabase, bool disposeOfWrappedDatabase = true)
         {
             _liteDB = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
+            lock(_hashSetLock) {
+                if (_wrappedDatabases.Contains(_liteDB)) {
+                    throw new LiteAsyncException("You can only have one LiteDatabaseAsync per LiteDatabase.");
+                }
+                _wrappedDatabases.Add(_liteDB);
+            }
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
@@ -190,6 +199,9 @@ namespace LiteDB.Async
                 if (_disposeOfWrappedDatabase)
                 {
                     _liteDB.Dispose();
+                }
+                lock(_hashSetLock) {
+                    _wrappedDatabases.Remove(_liteDB);
                 }
             }
         }
