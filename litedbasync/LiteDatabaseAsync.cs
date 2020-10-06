@@ -76,6 +76,17 @@ namespace LiteDB.Async
             set => _liteDB.Timeout = value;
         }
 
+        public Collation Collation
+        {
+            get => _liteDB.Collation;
+        }
+
+        public long LimitSize
+        {
+            get => _liteDB.LimitSize;
+            set => _liteDB.LimitSize = value;
+        }
+
         private void BackgroundLoop()
         {
             var waitHandles = new[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
