@@ -90,5 +90,20 @@ namespace Tests.LiteDB.Async
                 Assert.Equal("You can only have one LiteDatabaseAsync per LiteDatabase.", exception.Message);
             }
         }
+
+        [Fact]
+        public void Can_Wrap_LiteDb_Twice()
+        {
+            var mockWrappedDb = new Mock<ILiteDatabase>();
+            using (var db = new LiteDatabaseAsync(mockWrappedDb.Object, false))
+            {
+                // Do nothing
+            }
+            using (var db2 = new LiteDatabaseAsync(mockWrappedDb.Object, false))
+            {
+                // Do nothing
+            }
+            mockWrappedDb.Verify(x => x.Dispose(), Times.Never);
+        }
     }
 }
