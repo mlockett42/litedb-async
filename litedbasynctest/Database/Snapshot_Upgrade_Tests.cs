@@ -14,8 +14,8 @@ namespace Tests.LiteDB.Async
             var col = db.GetCollection("test");
 
             // Transactions not supported ATM by Async
-            //bool transactionCreated = db.BeginTrans();
-            //Assert.True(transactionCreated);
+            bool transactionCreated = await db.BeginTransAsync();
+            Assert.True(transactionCreated);
 
             int updatedDocs = await  col.UpdateManyAsync("{name: \"xxx\"}", BsonExpression.Create("_id = 1"));
             Assert.Equal(0, updatedDocs);

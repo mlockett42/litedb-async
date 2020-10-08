@@ -190,6 +190,73 @@ namespace LiteDB.Async
         }
 
         #endregion
+
+        #region Transactions
+        /// <summary>
+        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
+        /// Return true if transaction was created or false if current thread already in a transaction.
+        /// </summary>
+        public Task<bool> BeginTransAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.BeginTrans());
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Commit current transaction
+        /// </summary>
+        public Task<bool> CommitAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.Commit());
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Rollback current transaction
+        /// </summary>
+        public Task<bool> RollbackAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.Rollback());
+            });
+            return tcs.Task;
+        }
+
+        #endregion
+
+        #region Pragmas
+        /// <summary>
+        /// Get value from internal engine variables
+        /// </summary>
+        public Task<BsonValue> PragmaAsync(string name)
+        {
+            var tcs = new TaskCompletionSource<BsonValue>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.Pragma(name));
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Set new value to internal engine variables
+        /// </summary>
+        public Task<BsonValue> PragmaAsync(string name, BsonValue value)
+        {
+            var tcs = new TaskCompletionSource<BsonValue>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.Pragma(name, value));
+            });
+            return tcs.Task;
+        }
+        #endregion
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
