@@ -41,5 +41,17 @@ namespace LiteDB.Async
             });
             return tcs.Task;
         }
+
+        /// <summary>
+        /// Implements bulk insert documents in a collection. Usefull when need lots of documents.
+        /// </summary>
+        public Task<int> InsertBulkAsync(IEnumerable<T> entities, int batchSize = 5000)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            _liteDatabaseAsync.Enqueue(tcs, () => {
+                tcs.SetResult(GetUnderlyingCollection().InsertBulk(entities, batchSize));
+            });
+            return tcs.Task;
+        }
     }
 }

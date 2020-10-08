@@ -3,7 +3,7 @@ namespace LiteDB.Async
     /// <summary>
     /// Wraps a LiteCollection which will only be queried in the background thread
     /// </summary>
-    public partial class LiteCollectionAsync<T>
+    public partial class LiteCollectionAsync<T> : ILiteCollectionAsync<T>
     {
         private readonly ILiteCollection<T> _liteCollection;
         private readonly LiteDatabaseAsync _liteDatabaseAsync;
@@ -34,9 +34,24 @@ namespace LiteDB.Async
         /// <summary>
         /// Return a new LiteQueryableAsync to build more complex queries
         /// </summary>
-        public LiteQueryableAsync<T> Query()
+        public ILiteQueryableAsync<T> Query()
         {
             return new LiteQueryableAsync<T>(GetUnderlyingCollection().Query(), _liteDatabaseAsync);
         }
-    }
+
+         /// <summary>
+        /// Get collection name
+        /// </summary>
+        public string Name => _liteCollection.Name;
+
+        /// <summary>
+        /// Get collection auto id type
+        /// </summary>
+        public BsonAutoId AutoId => _liteCollection.AutoId;
+
+        /// <summary>
+        /// Getting entity mapper from current collection. Returns null if collection are BsonDocument type
+        /// </summary>
+        public EntityMapper EntityMapper => _liteCollection.EntityMapper;
+   }
 }

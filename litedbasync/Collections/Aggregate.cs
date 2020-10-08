@@ -68,6 +68,18 @@ namespace LiteDB.Async
         }
 
         /// <summary>
+        /// Count documents matching a query. This method does not deserialize any document. Needs indexes on query expression
+        /// </summary>
+        public Task<int> CountAsync(string predicate, params BsonValue[] args)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            _liteDatabaseAsync.Enqueue(tcs, () => {
+                tcs.SetResult(GetUnderlyingCollection().Count(predicate, args));
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
         /// Get document count in collection
         /// </summary>
         public Task<long> LongCountAsync()

@@ -39,7 +39,7 @@ namespace Tests.LiteDB.Async
         public async Task Rebuild_Large_Files()
         {
             // do some tests
-            async Task DoTestAsync(LiteDatabaseAsync db, LiteCollectionAsync<Zip> col)
+            async Task DoTestAsync(ILiteDatabaseAsync db, ILiteCollectionAsync<Zip> col)
             {
                 Assert.Equal(1, await col.CountAsync());
                 Assert.Equal(99, db.UserVersion);

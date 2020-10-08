@@ -65,5 +65,17 @@ namespace LiteDB.Async
             });
             return tcs.Task;
         }
-    }
+ 
+         /// <summary>
+        /// Delete all documents inside collection. Returns how many documents was deleted. Run inside current transaction
+        /// </summary>
+        public Task<int> DeleteAllAsync()
+        {
+            var tcs = new TaskCompletionSource<int>();
+            _liteDatabaseAsync.Enqueue(tcs, () => {
+                tcs.SetResult(GetUnderlyingCollection().DeleteAll());
+            });
+            return tcs.Task;
+        }
+   }
 }

@@ -8,7 +8,7 @@ using LiteDB.Engine;
 
 namespace LiteDB.Async
 {
-    public class LiteDatabaseAsync : IDisposable
+    public class LiteDatabaseAsync : ILiteDatabaseAsync
     {
         private readonly ILiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
@@ -145,6 +145,9 @@ namespace LiteDB.Async
         }
 
         #region Collections
+        /// <summary>
+        /// Get a collection using a name based on typeof(T).Name (BsonMapper.ResolveCollectionName function)
+        /// </summary>
         public LiteCollectionAsync<T> GetCollection<T>()
         {
             return this.GetCollection<T>(null);
@@ -272,17 +275,17 @@ namespace LiteDB.Async
             return tcs.Task;
         }
 
-        // /// <summary>
-        // /// Checks if a collection exists on database. Collection name is case insensitive
-        // /// </summary>
-        // public Task<bool> CollectionExistsAsync(string name)
-        // {
-        //     var tcs = new TaskCompletionSource<bool>();
-        //     Enqueue(tcs, () => {
-        //         tcs.SetResult(_liteDB.CollectionExists(name));
-        //     });
-        //     return tcs.Task;
-        // }
+        /// <summary>
+        /// Checks if a collection exists on database. Collection name is case insensitive
+        /// </summary>
+        public Task<bool> CollectionExistsAsync(string name)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.CollectionExists(name));
+            });
+            return tcs.Task;
+        }
 
         /// <summary>
         /// Drop a collection and all data + indexes
@@ -296,17 +299,17 @@ namespace LiteDB.Async
             return tcs.Task;
         }
 
-        // /// <summary>
-        // /// Rename a collection. Returns false if oldName does not exists or newName already exists
-        // /// </summary>
-        // public Task<bool> RenameCollectionAsync(string oldName, string newName)
-        // {
-        //     var tcs = new TaskCompletionSource<bool>();
-        //     Enqueue(tcs, () => {
-        //         tcs.SetResult(_liteDB.RenameCollection(oldName, newName));
-        //     });
-        //     return tcs.Task;
-        // }
+        /// <summary>
+        /// Rename a collection. Returns false if oldName does not exists or newName already exists
+        /// </summary>
+        public Task<bool> RenameCollectionAsync(string oldName, string newName)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.RenameCollection(oldName, newName));
+            });
+            return tcs.Task;
+        }
 
         #endregion
 
