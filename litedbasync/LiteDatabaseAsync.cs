@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
+using LiteDB.Engine;
 
 namespace LiteDB.Async
 {
@@ -257,6 +258,86 @@ namespace LiteDB.Async
         }
         #endregion
 
+        #region Shortcut
+
+        /// <summary>
+        /// Get all collections name inside this database.
+        /// </summary>
+        public Task<IEnumerable<string>> GetCollectionNamesAsync()
+        {
+            var tcs = new TaskCompletionSource<IEnumerable<string>>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.GetCollectionNames());
+            });
+            return tcs.Task;
+        }
+
+        // /// <summary>
+        // /// Checks if a collection exists on database. Collection name is case insensitive
+        // /// </summary>
+        // public Task<bool> CollectionExistsAsync(string name)
+        // {
+        //     var tcs = new TaskCompletionSource<bool>();
+        //     Enqueue(tcs, () => {
+        //         tcs.SetResult(_liteDB.CollectionExists(name));
+        //     });
+        //     return tcs.Task;
+        // }
+
+        /// <summary>
+        /// Drop a collection and all data + indexes
+        /// </summary>
+        public Task<bool> DropCollectionAsync(string name)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.DropCollection(name));
+            });
+            return tcs.Task;
+        }
+
+        // /// <summary>
+        // /// Rename a collection. Returns false if oldName does not exists or newName already exists
+        // /// </summary>
+        // public Task<bool> RenameCollectionAsync(string oldName, string newName)
+        // {
+        //     var tcs = new TaskCompletionSource<bool>();
+        //     Enqueue(tcs, () => {
+        //         tcs.SetResult(_liteDB.RenameCollection(oldName, newName));
+        //     });
+        //     return tcs.Task;
+        // }
+
+        #endregion
+
+        #region Checkpoint/Rebuild
+
+        /// <summary>
+        /// Do database checkpoint. Copy all commited transaction from log file into datafile.
+        /// </summary>
+        public Task CheckpointAsync()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                _liteDB.Checkpoint();
+                tcs.SetResult(true);
+            });
+            return tcs.Task;
+        }
+
+        /// <summary>
+        /// Rebuild all database to remove unused pages - reduce data file
+        /// </summary>
+        public Task<long> RebuildAsync(RebuildOptions options = null)
+        {
+            var tcs = new TaskCompletionSource<long>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(_liteDB.Rebuild(options));
+            });
+            return tcs.Task;
+        }
+
+        #endregion
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
