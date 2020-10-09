@@ -12,10 +12,9 @@ namespace LiteDB.Async
     {
         private readonly ILiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
-        private readonly ManualResetEventSlim _newTaskArrived = new ManualResetEventSlim(false);
-        private readonly ManualResetEventSlim _shouldTerminate = new ManualResetEventSlim(false);
+        private readonly SemaphoreSlim _newTaskArrived = new SemaphoreSlim(initialCount: 0, maxCount: int.MaxValue);
+        private readonly CancellationTokenSource _shouldTerminate = new CancellationTokenSource();
         private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
-        private readonly object _queueLock = new object();
         private readonly bool _disposeOfWrappedDatabase = true;
         private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
         private static object _hashSetLock = new object();
@@ -99,49 +98,41 @@ namespace LiteDB.Async
 
         private void BackgroundLoop()
         {
-            var waitHandles = new[] { _newTaskArrived.WaitHandle, _shouldTerminate.WaitHandle };
+            var terminationToken = _shouldTerminate.Token;
 
-            while (true)
+            try
             {
-                var triggerEvent = WaitHandle.WaitAny(waitHandles);
-                if (triggerEvent == 1)
+                while (!terminationToken.IsCancellationRequested)
                 {
-                    return;
+                    _newTaskArrived.Wait(terminationToken);
+
+                    if (!_queue.TryDequeue(out var function)) continue;
+
+                    function();
                 }
-
-                LiteAsyncDelegate function;
-
-                lock (_queueLock)
-                {
-                    if (!_queue.TryDequeue(out function))
-                    {
-                        // reset when queue is empty
-                        _newTaskArrived.Reset();
-                        continue;
-                    }
-                }
-
-                function();
+            }
+            catch (OperationCanceledException) when (terminationToken.IsCancellationRequested)
+            {
+                // it's OK, we're exiting
             }
         }
 
         internal void Enqueue<T>(TaskCompletionSource<T> tcs, LiteAsyncDelegate function)
         {
-            lock (_queueLock)
+            void Function()
             {
-                _queue.Enqueue(() =>
+                try
                 {
-                    try
-                    {
-                        function();
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
-                    }
-                });
-                _newTaskArrived.Set();
+                    function();
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
+                }
             }
+
+            _queue.Enqueue(Function);
+            _newTaskArrived.Release();
         }
 
         #region Collections
@@ -345,14 +336,14 @@ namespace LiteDB.Async
         {
             if (disposing)
             {
-                _shouldTerminate.Set();
-                _backgroundThread.Join();
-                if (_disposeOfWrappedDatabase)
+                using (_liteDB)
+                using (_shouldTerminate)
+                using (_newTaskArrived)
                 {
-                    _liteDB.Dispose();
-                }
-                lock(_hashSetLock) {
-                    _wrappedDatabases.Remove(_liteDB);
+                    _shouldTerminate.Cancel();
+                    
+                    // give the thread 5 seconds to exit... must not block forever here
+                    _backgroundThread.Join(TimeSpan.FromSeconds(5));
                 }
             }
         }
