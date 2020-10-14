@@ -336,7 +336,6 @@ namespace LiteDB.Async
         {
             if (disposing)
             {
-                using (_liteDB)
                 using (_shouldTerminate)
                 using (_newTaskArrived)
                 {
@@ -344,6 +343,12 @@ namespace LiteDB.Async
                     
                     // give the thread 5 seconds to exit... must not block forever here
                     _backgroundThread.Join(TimeSpan.FromSeconds(5));
+                }
+                lock(_hashSetLock) {
+                    _wrappedDatabases.Remove(_liteDB);
+                }
+                if (_disposeOfWrappedDatabase) {
+                    _liteDB.Dispose();
                 }
             }
         }
