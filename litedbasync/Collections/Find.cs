@@ -15,8 +15,8 @@ namespace LiteDB.Async
         public Task<IEnumerable<T>> FindAsync(BsonExpression predicate, int skip = 0, int limit = int.MaxValue)
         {
             var tcs = new TaskCompletionSource<IEnumerable<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Find(predicate, skip, limit));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Find(predicate, skip, limit));
             });
             return tcs.Task;
         }
@@ -27,8 +27,8 @@ namespace LiteDB.Async
         public Task<IEnumerable<T>> FindAsync(Query query, int skip = 0, int limit = int.MaxValue)
         {
             var tcs = new TaskCompletionSource<IEnumerable<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Find(query, skip, limit));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Find(query, skip, limit));
             });
             return tcs.Task;
         }
@@ -39,8 +39,8 @@ namespace LiteDB.Async
         public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, int skip = 0, int limit = int.MaxValue)
         {
             var tcs = new TaskCompletionSource<IEnumerable<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Find(predicate, skip, limit));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Find(predicate, skip, limit));
             });
             return tcs.Task;
         }
@@ -55,8 +55,8 @@ namespace LiteDB.Async
         public Task<T> FindByIdAsync(BsonValue id)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindById(id));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindById(id));
             });
             return tcs.Task;
         }
@@ -67,8 +67,8 @@ namespace LiteDB.Async
         public Task<T> FindOneAsync(BsonExpression predicate)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindOne(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindOne(predicate));
             });
             return tcs.Task;
         }
@@ -79,8 +79,8 @@ namespace LiteDB.Async
         public Task<T> FindOneAsync(string predicate, BsonDocument parameters)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindOne(predicate, parameters));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindOne(predicate, parameters));
             });
             return tcs.Task;
         }
@@ -91,8 +91,8 @@ namespace LiteDB.Async
         public Task<T> FindOneAsync(BsonExpression predicate, params BsonValue[] args)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindOne(predicate, args));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindOne(predicate, args));
             });
             return tcs.Task;
         }
@@ -103,8 +103,8 @@ namespace LiteDB.Async
         public Task<T> FindOneAsync(Expression<Func<T, bool>> predicate)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindOne(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindOne(predicate));
             });
             return tcs.Task;
         }
@@ -115,8 +115,8 @@ namespace LiteDB.Async
         public Task<T> FindOneAsync(Query query)
         {
             var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindOne(query));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindOne(query));
             });
             return tcs.Task;
         }
@@ -127,8 +127,8 @@ namespace LiteDB.Async
         public Task<IEnumerable<T>> FindAllAsync()
         {
             var tcs = new TaskCompletionSource<IEnumerable<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().FindAll());
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.FindAll());
             });
             return tcs.Task;
         }
