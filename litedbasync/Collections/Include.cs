@@ -11,7 +11,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteCollectionAsync<T> Include<K>(Expression<Func<T, K>> keySelector)
         {
-            return new LiteCollectionAsync<T>(GetUnderlyingCollection().Include(keySelector), _liteDatabaseAsync);
+            return new LiteCollectionAsync<T>(UnderlyingCollection.Include(keySelector), Database);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteCollectionAsync<T> Include(BsonExpression keySelector)
         {
-            return new LiteCollectionAsync<T>(GetUnderlyingCollection().Include(keySelector), _liteDatabaseAsync);
+            return new LiteCollectionAsync<T>(UnderlyingCollection.Include(keySelector), Database);
         }
     }
 }

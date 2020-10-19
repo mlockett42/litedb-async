@@ -13,8 +13,8 @@ namespace LiteDB.Async
         public Task<bool> UpdateAsync(T entity)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Update(entity));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Update(entity));
             });
             return tcs.Task;
 
@@ -26,8 +26,8 @@ namespace LiteDB.Async
         public Task<bool> UpdateAsync(BsonValue id, T entity)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Update(id, entity));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Update(id, entity));
             });
             return tcs.Task;
         }
@@ -38,8 +38,8 @@ namespace LiteDB.Async
         public Task<int> UpdateAsync(IEnumerable<T> entities)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Update(entities));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Update(entities));
             });
             return tcs.Task;
         }
@@ -51,8 +51,8 @@ namespace LiteDB.Async
         public Task<int> UpdateManyAsync(BsonExpression transform, BsonExpression predicate)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().UpdateMany(transform, predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.UpdateMany(transform, predicate));
             });
             return tcs.Task;
         }
@@ -64,8 +64,8 @@ namespace LiteDB.Async
         public Task<int> UpdateManyAsync(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().UpdateMany(extend, predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.UpdateMany(extend, predicate));
             });
             return tcs.Task;
         }

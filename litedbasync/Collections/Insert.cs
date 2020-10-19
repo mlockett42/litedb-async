@@ -11,8 +11,8 @@ namespace LiteDB.Async
         public Task<BsonValue> InsertAsync(T entity)
         {
             var tcs = new TaskCompletionSource<BsonValue>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Insert(entity));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Insert(entity));
             });
             return tcs.Task;
         }
@@ -23,8 +23,8 @@ namespace LiteDB.Async
         public Task InsertAsync(BsonValue id, T entity)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                GetUnderlyingCollection().Insert(id, entity);
+            Database.Enqueue(tcs, () => {
+                UnderlyingCollection.Insert(id, entity);
                 tcs.SetResult(true);
             });
             return tcs.Task;
@@ -36,8 +36,8 @@ namespace LiteDB.Async
         public Task<int> InsertAsync(IEnumerable<T> entities)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Insert(entities));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Insert(entities));
             });
             return tcs.Task;
         }
@@ -48,8 +48,8 @@ namespace LiteDB.Async
         public Task<int> InsertBulkAsync(IEnumerable<T> entities, int batchSize = 5000)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().InsertBulk(entities, batchSize));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.InsertBulk(entities, batchSize));
             });
             return tcs.Task;
         }

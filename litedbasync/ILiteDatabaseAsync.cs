@@ -1,8 +1,5 @@
 using System;
-using System.Threading;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using System.IO;
 using System.Collections.Generic;
 using LiteDB.Engine;
 
@@ -48,6 +45,11 @@ namespace LiteDB.Async
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
         /// </summary>
         ILiteStorageAsync<string> FileStorage { get; }
+
+        /// <summary>
+        /// Gets the underlying <see cref="ILiteDatabase"/>. Useful to access various operations not exposed by <see cref="ILiteDatabaseAsync"/>
+        /// </summary>
+        ILiteDatabase UnderlyingDatabase { get; }
 
         /// <summary>
         /// Get new instance of Storage using custom FileId type, custom "_files" collection name and custom "_chunks" collection. LiteDB support multiples file storages (using different files/chunks collection names)

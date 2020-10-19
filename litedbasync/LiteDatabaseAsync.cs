@@ -10,7 +10,6 @@ namespace LiteDB.Async
 {
     public class LiteDatabaseAsync : ILiteDatabaseAsync
     {
-        private readonly ILiteDatabase _liteDB;
         private readonly Thread _backgroundThread;
         private readonly SemaphoreSlim _newTaskArrived = new SemaphoreSlim(initialCount: 0, maxCount: int.MaxValue);
         private readonly CancellationTokenSource _shouldTerminate = new CancellationTokenSource();
@@ -24,7 +23,7 @@ namespace LiteDB.Async
         /// </summary>
         public LiteDatabaseAsync(string connectionString, BsonMapper mapper = null)
         {
-            _liteDB = new LiteDatabase(connectionString, mapper);
+            UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
@@ -38,7 +37,7 @@ namespace LiteDB.Async
         /// <param name="logStream">LogStream reference </param>
         public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null, Stream logStream = null)
         {
-            _liteDB = new LiteDatabase(stream, mapper, logStream);
+            UnderlyingDatabase = new LiteDatabase(stream, mapper, logStream);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
@@ -50,50 +49,56 @@ namespace LiteDB.Async
         /// <param name="bool">disposeOfWrappedDatabase iff true dispose of the wrappedDatabase when this object is disposed</param>
         public LiteDatabaseAsync(ILiteDatabase wrappedDatabase, bool disposeOfWrappedDatabase = true)
         {
-            _liteDB = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
+            UnderlyingDatabase = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
             lock(_hashSetLock) {
-                if (_wrappedDatabases.Contains(_liteDB)) {
+                if (_wrappedDatabases.Contains(UnderlyingDatabase)) {
                     throw new LiteAsyncException("You can only have one LiteDatabaseAsync per LiteDatabase.");
                 }
-                _wrappedDatabases.Add(_liteDB);
+                _wrappedDatabases.Add(UnderlyingDatabase);
             }
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
         }
+
+        /// <summary>
+        /// Gets the underlying <see cref="ILiteDatabase"/>. Useful to access various operations not exposed by <see cref="ILiteDatabaseAsync"/>
+        /// </summary>
+        public ILiteDatabase UnderlyingDatabase { get; }
+
         public bool UtcDate
         {
-            get => _liteDB.UtcDate;
-            set => _liteDB.UtcDate = value;
+            get => UnderlyingDatabase.UtcDate;
+            set => UnderlyingDatabase.UtcDate = value;
         }
 
         public int CheckpointSize
         {
-            get => _liteDB.CheckpointSize;
-            set => _liteDB.CheckpointSize = value;
+            get => UnderlyingDatabase.CheckpointSize;
+            set => UnderlyingDatabase.CheckpointSize = value;
         }
 
         public int UserVersion
         {
-            get => _liteDB.UserVersion;
-            set => _liteDB.UserVersion = value;
+            get => UnderlyingDatabase.UserVersion;
+            set => UnderlyingDatabase.UserVersion = value;
         }
 
         public TimeSpan Timeout
         {
-            get => _liteDB.Timeout;
-            set => _liteDB.Timeout = value;
+            get => UnderlyingDatabase.Timeout;
+            set => UnderlyingDatabase.Timeout = value;
         }
 
         public Collation Collation
         {
-            get => _liteDB.Collation;
+            get => UnderlyingDatabase.Collation;
         }
 
         public long LimitSize
         {
-            get => _liteDB.LimitSize;
-            set => _liteDB.LimitSize = value;
+            get => UnderlyingDatabase.LimitSize;
+            set => UnderlyingDatabase.LimitSize = value;
         }
 
         private void BackgroundLoop()
@@ -150,7 +155,7 @@ namespace LiteDB.Async
         /// <param name="name">Collection name (case insensitive)</param>
         public LiteCollectionAsync<T> GetCollection<T>(string name)
         {
-            return new LiteCollectionAsync<T>(_liteDB.GetCollection<T>(name), this);
+            return new LiteCollectionAsync<T>(UnderlyingDatabase.GetCollection<T>(name), this);
         }
 
         /// <summary>
@@ -160,7 +165,7 @@ namespace LiteDB.Async
         /// <param name="autoId">Define autoId data type (when document contains no _id field)</param>
         public LiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId)
         {
-            return new LiteCollectionAsync<BsonDocument>(_liteDB.GetCollection(name, autoId), this);
+            return new LiteCollectionAsync<BsonDocument>(UnderlyingDatabase.GetCollection(name, autoId), this);
         }
         #endregion
 
@@ -181,7 +186,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteStorageAsync<TFileId> GetStorage<TFileId>(string filesCollection = "_files", string chunksCollection = "_chunks")
         {
-            return new LiteStorageAsync<TFileId>(this, _liteDB, filesCollection, chunksCollection);
+            return new LiteStorageAsync<TFileId>(this, UnderlyingDatabase, filesCollection, chunksCollection);
         }
 
         #endregion
@@ -195,7 +200,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.BeginTrans());
+                tcs.SetResult(UnderlyingDatabase.BeginTrans());
             });
             return tcs.Task;
         }
@@ -207,7 +212,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.Commit());
+                tcs.SetResult(UnderlyingDatabase.Commit());
             });
             return tcs.Task;
         }
@@ -219,7 +224,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.Rollback());
+                tcs.SetResult(UnderlyingDatabase.Rollback());
             });
             return tcs.Task;
         }
@@ -234,7 +239,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<BsonValue>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.Pragma(name));
+                tcs.SetResult(UnderlyingDatabase.Pragma(name));
             });
             return tcs.Task;
         }
@@ -246,7 +251,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<BsonValue>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.Pragma(name, value));
+                tcs.SetResult(UnderlyingDatabase.Pragma(name, value));
             });
             return tcs.Task;
         }
@@ -261,7 +266,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<IEnumerable<string>>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.GetCollectionNames());
+                tcs.SetResult(UnderlyingDatabase.GetCollectionNames());
             });
             return tcs.Task;
         }
@@ -273,7 +278,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.CollectionExists(name));
+                tcs.SetResult(UnderlyingDatabase.CollectionExists(name));
             });
             return tcs.Task;
         }
@@ -285,7 +290,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.DropCollection(name));
+                tcs.SetResult(UnderlyingDatabase.DropCollection(name));
             });
             return tcs.Task;
         }
@@ -297,7 +302,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.RenameCollection(oldName, newName));
+                tcs.SetResult(UnderlyingDatabase.RenameCollection(oldName, newName));
             });
             return tcs.Task;
         }
@@ -313,7 +318,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
-                _liteDB.Checkpoint();
+                UnderlyingDatabase.Checkpoint();
                 tcs.SetResult(true);
             });
             return tcs.Task;
@@ -326,7 +331,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<long>();
             Enqueue(tcs, () => {
-                tcs.SetResult(_liteDB.Rebuild(options));
+                tcs.SetResult(UnderlyingDatabase.Rebuild(options));
             });
             return tcs.Task;
         }
@@ -345,10 +350,10 @@ namespace LiteDB.Async
                     _backgroundThread.Join(TimeSpan.FromSeconds(5));
                 }
                 lock(_hashSetLock) {
-                    _wrappedDatabases.Remove(_liteDB);
+                    _wrappedDatabases.Remove(UnderlyingDatabase);
                 }
                 if (_disposeOfWrappedDatabase) {
-                    _liteDB.Dispose();
+                    UnderlyingDatabase.Dispose();
                 }
             }
         }

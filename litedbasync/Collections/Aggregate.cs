@@ -12,8 +12,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync()
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count());
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count());
             });
             return tcs.Task;
         }
@@ -24,8 +24,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync(BsonExpression predicate)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count(predicate));
             });
             return tcs.Task;
         }
@@ -36,8 +36,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync(string predicate, BsonDocument parameters)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count(predicate, parameters));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count(predicate, parameters));
             });
             return tcs.Task;
 
@@ -49,8 +49,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync(Expression<Func<T, bool>> predicate)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count(predicate));
             });
             return tcs.Task;
         }
@@ -61,8 +61,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync(Query query)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count(query));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count(query));
             });
             return tcs.Task;
         }
@@ -73,8 +73,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync(string predicate, params BsonValue[] args)
         {
             var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Count(predicate, args));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Count(predicate, args));
             });
             return tcs.Task;
         }
@@ -85,8 +85,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync()
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount());
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount());
             });
             return tcs.Task;
         }
@@ -97,8 +97,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync(BsonExpression predicate)
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount(predicate));
             });
             return tcs.Task;
         }
@@ -109,8 +109,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync(string predicate, BsonDocument parameters)
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount(predicate, parameters));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount(predicate, parameters));
             });
             return tcs.Task;
         }
@@ -121,8 +121,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync(string predicate, params BsonValue[] args)
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount(predicate, args));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount(predicate, args));
             });
             return tcs.Task;
         }
@@ -133,8 +133,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync(Expression<Func<T, bool>> predicate)
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount(predicate));
             });
             return tcs.Task;
         }
@@ -145,8 +145,8 @@ namespace LiteDB.Async
         public Task<long> LongCountAsync(Query query)
         {
             var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().LongCount(query));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.LongCount(query));
             });
             return tcs.Task;
         }
@@ -157,8 +157,8 @@ namespace LiteDB.Async
         public Task<bool> ExistsAsync(BsonExpression predicate)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Exists(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Exists(predicate));
             });
             return tcs.Task;
         }
@@ -169,8 +169,8 @@ namespace LiteDB.Async
         public Task<bool> ExistsAsync(string predicate, BsonDocument parameters)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Exists(predicate, parameters));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Exists(predicate, parameters));
             });
             return tcs.Task;
         }
@@ -181,8 +181,8 @@ namespace LiteDB.Async
         public Task<bool> ExistsAsync(string predicate, params BsonValue[] args)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Exists(predicate, args));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Exists(predicate, args));
             });
             return tcs.Task;
         }
@@ -193,8 +193,8 @@ namespace LiteDB.Async
         public Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Exists(predicate));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Exists(predicate));
             });
             return tcs.Task;
         }
@@ -205,8 +205,8 @@ namespace LiteDB.Async
         public Task<bool> ExistsAsync(Query query)
         {
             var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Exists(query));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Exists(query));
             });
             return tcs.Task;
         }
@@ -219,8 +219,8 @@ namespace LiteDB.Async
         public Task<BsonValue> MinAsync(BsonExpression keySelector)
         {
             var tcs = new TaskCompletionSource<BsonValue>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Min(keySelector));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Min(keySelector));
             });
             return tcs.Task;
         }
@@ -231,8 +231,8 @@ namespace LiteDB.Async
         public Task<BsonValue> MinAsync()
         {
             var tcs = new TaskCompletionSource<BsonValue>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Min());
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Min());
             });
             return tcs.Task;
         }
@@ -243,8 +243,8 @@ namespace LiteDB.Async
         public Task<K> MinAsync<K>(Expression<Func<T, K>> keySelector)
         {
             var tcs = new TaskCompletionSource<K>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Min(keySelector));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Min(keySelector));
             });
             return tcs.Task;
         }
@@ -255,8 +255,8 @@ namespace LiteDB.Async
         public Task<BsonValue> MaxAsync(BsonExpression keySelector)
         {
             var tcs = new TaskCompletionSource<BsonValue>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Max(keySelector));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Max(keySelector));
             });
             return tcs.Task;
         }
@@ -267,8 +267,8 @@ namespace LiteDB.Async
         public Task<BsonValue> MaxAsync()
         {
             var tcs = new TaskCompletionSource<BsonValue>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Max());
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Max());
             });
             return tcs.Task;
         }
@@ -279,8 +279,8 @@ namespace LiteDB.Async
         public Task<K> MaxAsync<K>(Expression<Func<T, K>> keySelector)
         {
             var tcs = new TaskCompletionSource<K>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(GetUnderlyingCollection().Max(keySelector));
+            Database.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingCollection.Max(keySelector));
             });
             return tcs.Task;
 
