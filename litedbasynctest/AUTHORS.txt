@@ -1,0 +1,4 @@
+Contributors to LiteDb.Async are listed here.
+
+Mark Lockett https://github.com/mlockett42
+Mogens Heller Grabe https://github.com/mookid8000
