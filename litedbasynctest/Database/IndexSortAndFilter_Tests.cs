@@ -37,14 +37,24 @@ namespace Tests.LiteDB.Async
 
             Task.WaitAll(task1, task2, task3);
 
-            var task4 =_collection.EnsureIndexAsync("idx_value", x => x.Value);
+            var task4 = _collection.EnsureIndexAsync("idx_value", x => x.Value);
             task4.Wait();
+
         }
 
         public void Dispose()
         {
             _database.Dispose();
             _tempFile.Dispose();
+        }
+
+        [Fact]
+        public async Task NamedIndexWasCorrectlyCreated()
+        {
+            // Too fix https://github.com/mlockett42/litedb-async/issues/12
+            var indexes = _database.GetCollection("$indexes");
+            var indexContent = await indexes.Query().ToListAsync();
+            Assert.Single(indexContent.Where(x => x["name"] == "idx_value"));
         }
 
         [Fact]

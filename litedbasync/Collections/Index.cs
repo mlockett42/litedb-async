@@ -59,7 +59,7 @@ namespace LiteDB.Async
         {
             var tcs = new TaskCompletionSource<bool>();
             Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.EnsureIndex<K>(keySelector, unique));
+                tcs.SetResult(UnderlyingCollection.EnsureIndex<K>(name, keySelector, unique));
             });
             return tcs.Task;
         }
