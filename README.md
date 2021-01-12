@@ -126,3 +126,5 @@ https://docs.microsoft.com/en-us/nuget/nuget-org/publish-a-package
 
 When checking out for the first time copy the `.vscode/launch.json.default` and `.vscode/tasks.json.default` to `.vscode/launch.json` and `.vscode/tasks.json`.
 
+## Example usage
+The repo https://github.com/mlockett42/mvvm-cross-litedb-async gives an example of how to use this library in Xamarin Forms and MVVM.
