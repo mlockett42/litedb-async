@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>LiteDB.Async</PackageId>
-    <Version>0.0.7</Version>
+    <Version>0.0.8</Version>
     <Authors>Mark Lockett</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>LiteDB-Async</Title>
