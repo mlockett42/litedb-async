@@ -17,12 +17,16 @@ namespace LiteDB.Async
         private readonly bool _disposeOfWrappedDatabase = true;
         private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
         private static object _hashSetLock = new object();
+        private readonly string _connectionString;
+        private readonly BsonMapper _mapper;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
         /// </summary>
         public LiteDatabaseAsync(string connectionString, BsonMapper mapper = null)
         {
+            _connectionString = connectionString;
+            _mapper = mapper;
             UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
@@ -193,41 +197,41 @@ namespace LiteDB.Async
 
         #region Transactions
         /// <summary>
-        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
-        /// Return true if transaction was created or false if current thread already in a transaction.
+        /// Return a new database where all operations take place in a single transaction
         /// </summary>
-        public Task<bool> BeginTransAsync()
+        public ILiteDatabaseTransactionAsync BeginTrans()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.BeginTrans());
-            });
-            return tcs.Task;
+            return new LiteDatabaseTransactionAsync(_connectionString, _mapper);
+            //var tcs = new TaskCompletionSource<bool>();
+            //Enqueue(tcs, () => {
+            //    tcs.SetResult(UnderlyingDatabase.BeginTrans());
+            //});
+            //return tcs.Task;
         }
 
-        /// <summary>
-        /// Commit current transaction
-        /// </summary>
-        public Task<bool> CommitAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Commit());
-            });
-            return tcs.Task;
-        }
+        ///// <summary>
+        ///// Commit current transaction
+        ///// </summary>
+        //public Task<bool> CommitAsync()
+        //{
+        //    var tcs = new TaskCompletionSource<bool>();
+        //    Enqueue(tcs, () => {
+        //        tcs.SetResult(UnderlyingDatabase.Commit());
+        //    });
+        //    return tcs.Task;
+        //}
 
-        /// <summary>
-        /// Rollback current transaction
-        /// </summary>
-        public Task<bool> RollbackAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Rollback());
-            });
-            return tcs.Task;
-        }
+        ///// <summary>
+        ///// Rollback current transaction
+        ///// </summary>
+        //public Task<bool> RollbackAsync()
+        //{
+        //    var tcs = new TaskCompletionSource<bool>();
+        //    Enqueue(tcs, () => {
+        //        tcs.SetResult(UnderlyingDatabase.Rollback());
+        //    });
+        //    return tcs.Task;
+        //}
 
         #endregion
 

@@ -11,11 +11,11 @@ namespace Tests.LiteDB.Async
         public async Task Transaction_Update_Upsert()
         {
             using var db = new LiteDatabaseAsync(":memory:");
-            var col = db.GetCollection("test");
 
             // Transactions not supported ATM by Async
-            bool transactionCreated = await db.BeginTransAsync();
-            Assert.True(transactionCreated);
+            var transDb = db.BeginTrans();
+            var col = transDb.GetCollection("test");
+            Assert.NotNull(transDb);
 
             int updatedDocs = await  col.UpdateManyAsync("{name: \"xxx\"}", BsonExpression.Create("_id = 1"));
             Assert.Equal(0, updatedDocs);

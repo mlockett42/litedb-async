@@ -37,7 +37,8 @@ namespace Tests.LiteDB.Async
                 // but will commit only 2s later
                 var ta = Task.Run(async () =>
                 {
-                    await asyncDb.BeginTransAsync();
+                    var transDb = asyncDb.BeginTrans();
+                    var asyncPerson = transDb.GetCollection<Person>();
 
                     await asyncPerson.InsertAsync(data2);
 
@@ -48,7 +49,7 @@ namespace Tests.LiteDB.Async
 
                     count.Should().Be(data1.Length + data2.Length);
 
-                    await asyncDb.CommitAsync();
+                    await transDb.CommitAsync();
                 });
 
                 // task B will try delete all documents but will be locked during 1 second
@@ -93,7 +94,8 @@ namespace Tests.LiteDB.Async
                 // but will commit only 1s later - this plus +100 document must be visible only inside task A
                 var ta = Task.Run(async () =>
                 {
-                    await asyncDb.BeginTransAsync();
+                    var transDb = asyncDb.BeginTrans();
+                    var asyncPerson = transDb.GetCollection<Person>();
 
                     await asyncPerson.InsertAsync(data2);
 
@@ -104,7 +106,6 @@ namespace Tests.LiteDB.Async
 
                     count.Should().Be(data1.Length + data2.Length);
 
-                    await asyncDb.CommitAsync();
                     taskBSemaphore.Release();
                 });
 
@@ -154,14 +155,15 @@ namespace Tests.LiteDB.Async
                 // task A will insert more 100 documents but will commit only 1s later
                 var ta = Task.Run(async () =>
                 {
-                    await asyncDb.BeginTransAsync();
+                    var asyncDb2 = asyncDb.BeginTrans();
+                    var asyncPerson = asyncDb2.GetCollection<Person>();
 
                     await asyncPerson.InsertAsync(data2);
 
                     taskBSemaphore.Release();
                     taskASemaphore.Wait();
 
-                    await asyncDb.CommitAsync();
+                    await asyncDb2.CommitAsync();
 
                     taskBSemaphore.Release();
                 });
@@ -200,30 +202,35 @@ namespace Tests.LiteDB.Async
 
             using (var db = new LiteDatabaseAsync(new MemoryStream()))
             {
-                var person = db.GetCollection<Person>();
 
                 // first time transaction will be opened
-                (await db.BeginTransAsync()).Should().BeTrue();
+                var transDb1 = db.BeginTrans();
+                Assert.NotNull(transDb1);
+                //(await db.BeginTransAsync()).Should().BeTrue();
+                var person = transDb1.GetCollection<Person>();
 
                 // but in second type transaction will be same
-                (await db.BeginTransAsync()).Should().BeFalse();
+                var transDb2 = transDb1.BeginTrans();
+                Assert.NotNull(transDb2);
+                //(await db.BeginTransAsync()).Should().BeFalse();
 
                 await person.InsertAsync(data0);
 
                 // must commit transaction
-                (await db.CommitAsync()).Should().BeTrue();
+                (await transDb1.CommitAsync()).Should().BeTrue();
 
                 // no transaction to commit
-                (await db.CommitAsync()).Should().BeFalse();
+                (await transDb1.CommitAsync()).Should().BeFalse();
 
                 // no transaction to rollback;
-                (await db.RollbackAsync()).Should().BeFalse();
-
-                (await db.BeginTransAsync()).Should().BeTrue();
+                //(await db.RollbackAsync()).Should().BeFalse();
+                var transDb3 = db.BeginTrans();
+                //(await db.BeginTransAsync()).Should().BeTrue();
 
                 // no page was changed but ok, let's rollback anyway
-                (await db.RollbackAsync()).Should().BeTrue();
+                (await transDb3.RollbackAsync()).Should().BeTrue();
 
+                person = transDb1.GetCollection<Person>();
                 // auto-commit
                 await person.InsertAsync(data1);
 
