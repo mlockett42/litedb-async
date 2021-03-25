@@ -29,6 +29,16 @@ namespace LiteDB.Async
         }
 
         /// <summary>
+        /// Starts LiteDB database using a connection string for file system database
+        /// </summary>
+        public LiteDatabaseAsync(ConnectionString connectionString, BsonMapper mapper = null)
+        {
+            UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
+            _backgroundThread = new Thread(BackgroundLoop);
+            _backgroundThread.Start();
+        }
+
+        /// <summary>
         /// Starts LiteDB database using a generic Stream implementation (mostly MemoryStrem).
         /// Use another MemoryStrem as LOG file.
         /// </summary>
