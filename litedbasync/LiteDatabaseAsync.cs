@@ -144,7 +144,7 @@ namespace LiteDB.Async
         /// <summary>
         /// Get a collection using a name based on typeof(T).Name (BsonMapper.ResolveCollectionName function)
         /// </summary>
-        public LiteCollectionAsync<T> GetCollection<T>()
+        public ILiteCollectionAsync<T> GetCollection<T>()
         {
             return this.GetCollection<T>(null);
         }
@@ -153,7 +153,7 @@ namespace LiteDB.Async
         /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
-        public LiteCollectionAsync<T> GetCollection<T>(string name)
+        public ILiteCollectionAsync<T> GetCollection<T>(string name)
         {
             return new LiteCollectionAsync<T>(UnderlyingDatabase.GetCollection<T>(name), this);
         }
@@ -163,7 +163,7 @@ namespace LiteDB.Async
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
         /// <param name="autoId">Define autoId data type (when document contains no _id field)</param>
-        public LiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId)
+        public ILiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId)
         {
             return new LiteCollectionAsync<BsonDocument>(UnderlyingDatabase.GetCollection(name, autoId), this);
         }

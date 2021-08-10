@@ -23,20 +23,20 @@ namespace LiteDB.Async
         /// <summary>
         /// Get a collection using a name based on typeof(T).Name (BsonMapper.ResolveCollectionName function)
         /// </summary>
-        LiteCollectionAsync<T> GetCollection<T>();
+        ILiteCollectionAsync<T> GetCollection<T>();
 
         /// <summary>
         /// Get a collection using a entity class as strong typed document. If collection does not exits, create a new one.
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
-        LiteCollectionAsync<T> GetCollection<T>(string name);
+        ILiteCollectionAsync<T> GetCollection<T>(string name);
 
         /// <summary>
         /// Get a collection using a generic BsonDocument. If collection does not exits, create a new one.
         /// </summary>
         /// <param name="name">Collection name (case insensitive)</param>
         /// <param name="autoId">Define autoId data type (when document contains no _id field)</param>
-        LiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId);
+        ILiteCollectionAsync<BsonDocument> GetCollection(string name, BsonAutoId autoId = BsonAutoId.ObjectId);
         #endregion
 
         #region FileStorage

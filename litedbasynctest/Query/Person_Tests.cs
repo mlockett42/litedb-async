@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using LiteDB;
 using LiteDB.Async;
 
 namespace Tests.LiteDB.Async
@@ -9,7 +10,7 @@ namespace Tests.LiteDB.Async
         protected readonly Person[] local;
 
         protected LiteDatabaseAsync _db;
-        protected LiteCollectionAsync<Person> _collection;
+        protected ILiteCollectionAsync<Person> _collection;
 
         public Person_Tests()
         {

@@ -21,7 +21,7 @@ namespace Tests.LiteDB.Async
 
         #endregion
 
-        private LiteCollectionAsync<Item> _collection;
+        private ILiteCollectionAsync<Item> _collection;
         private TempFile _tempFile;
         private LiteDatabaseAsync _database;
 
