@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using LiteDB.Async;
 
-namespace LiteDB
+namespace LiteDB.Async
 {
     public interface ILiteCollectionAsync<T>
     {
