@@ -233,7 +233,7 @@ namespace LiteDB.Async
                 () => UnderlyingDatabase.Rollback());
         }
 
-        public ILiteDatabaseAsync BeginTransAsync()
+        public ILiteDatabaseAsync BeginTransaction()
         {
             if (_connectionString == null || _connectionString.Connection == ConnectionType.Direct)
             {

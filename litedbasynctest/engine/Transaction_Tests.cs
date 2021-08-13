@@ -20,7 +20,7 @@ namespace Tests.LiteDB.Async
             {
                 var exception = Assert.Throws<LiteAsyncException>(() =>
                     {
-                        var transDb = asyncDb.BeginTransAsync();
+                        var transDb = asyncDb.BeginTransaction();
                     });
                 Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
             }
@@ -41,7 +41,7 @@ namespace Tests.LiteDB.Async
             {
                 var exception = Assert.Throws<LiteAsyncException>(() =>
                 {
-                    var transDb = asyncDb.BeginTransAsync();
+                    var transDb = asyncDb.BeginTransaction();
                 });
                 Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
             }
@@ -61,7 +61,7 @@ namespace Tests.LiteDB.Async
             using (var asyncDb = new LiteDatabaseAsync(connectionString))
             {
                 // Verify this function just does not throw an exception
-                var transDb = asyncDb.BeginTransAsync();
+                var transDb = asyncDb.BeginTransaction();
             }
         }
 
