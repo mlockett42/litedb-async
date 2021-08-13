@@ -22,10 +22,8 @@ namespace LiteDB.Async
         /// Starts LiteDB database using a connection string for file system database
         /// </summary>
         public LiteDatabaseAsync(string connectionString, BsonMapper mapper = null)
+            : this(new ConnectionString(connectionString), mapper)
         {
-            UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
-            _backgroundThread = new Thread(BackgroundLoop);
-            _backgroundThread.Start();
         }
 
         /// <summary>
@@ -33,6 +31,7 @@ namespace LiteDB.Async
         /// </summary>
         public LiteDatabaseAsync(ConnectionString connectionString, BsonMapper mapper = null)
         {
+            _connectionString = connectionString;
             UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
@@ -185,6 +184,7 @@ namespace LiteDB.Async
         #region FileStorage
 
         private ILiteStorageAsync<string> _fs = null;
+        private ConnectionString _connectionString = null;
 
         /// <summary>
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
@@ -231,6 +231,15 @@ namespace LiteDB.Async
         {
             return EnqueueAsync(
                 () => UnderlyingDatabase.Rollback());
+        }
+
+        public ILiteDatabaseAsync BeginTransAsync()
+        {
+            if (_connectionString == null || _connectionString.Connection == ConnectionType.Direct)
+            {
+                throw new LiteAsyncException("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.");
+            }
+            return null;
         }
 
         #endregion

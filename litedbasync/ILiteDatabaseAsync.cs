@@ -59,7 +59,11 @@ namespace LiteDB.Async
         #endregion
 
         #region Transactions
-
+        /// <summary>
+        /// Return another database sharing the same file as this one and in a transaction
+        /// </summary>
+        /// <returns></returns>
+        ILiteDatabaseAsync BeginTransAsync();
         #endregion
 
         #region Pragmas

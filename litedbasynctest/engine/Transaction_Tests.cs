@@ -13,6 +13,59 @@ namespace Tests.LiteDB.Async
     public class Transactions_Tests
     {
         [Fact]
+        public void Transactions_Not_Allowed_On_Memmory_Streams()
+        {
+            //using (var db = new LiteDatabase("filename=:memory:"))
+            using (var asyncDb = new LiteDatabaseAsync(new MemoryStream()))
+            {
+                var exception = Assert.Throws<LiteAsyncException>(() =>
+                    {
+                        var transDb = asyncDb.BeginTransAsync();
+                    });
+                Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
+            }
+        }
+
+        [Fact]
+        public void Transactions_Not_Allowed_On_Direct_Mode_Files()
+        {
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Direct,
+                Password = "hunter2"
+            };
+
+            //using (var db = new LiteDatabase(connectionString))
+            using (var asyncDb = new LiteDatabaseAsync(connectionString))
+            {
+                var exception = Assert.Throws<LiteAsyncException>(() =>
+                {
+                    var transDb = asyncDb.BeginTransAsync();
+                });
+                Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
+            }
+        }
+
+        [Fact]
+        public void Transactions_Allowed_On_Direct_Mode_Files()
+        {
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            //using (var db = new LiteDatabase(connectionString))
+            using (var asyncDb = new LiteDatabaseAsync(connectionString))
+            {
+                // Verify this function just does not throw an exception
+                var transDb = asyncDb.BeginTransAsync();
+            }
+        }
+
+        [Fact]
         public async Task Transaction_Write_Lock_Timeout()
         {
             //TODO: Change this test to use the new transaction infrastructure
