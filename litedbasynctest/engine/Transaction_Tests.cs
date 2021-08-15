@@ -159,7 +159,41 @@ namespace Tests.LiteDB.Async
             }*/
         }
 
+        [Fact]
+        public async Task Transaction_Avoid_Dirty_Read_Rollback()
+        {
+            var data1 = DataGen.Person(1, 100).ToArray();
+            var data2 = DataGen.Person(101, 200).ToArray();
 
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb = new LiteDatabaseAsync(connectionString);
+            using var asyncDb2 = await asyncDb.BeginTransactionAsync();
+
+            var asyncPerson1 = asyncDb.GetCollection<Person>();
+            // init person collection with 100 document
+            await asyncPerson1.InsertAsync(data1);
+
+            var asyncPerson2 = asyncDb2.GetCollection<Person>();
+
+            // Add 100 more records
+            await asyncPerson2.InsertAsync(data2);
+
+            // Attempt to read from the first connection should be nothing there because we are inside a transaction
+            Assert.Equal(100, await asyncPerson1.CountAsync());
+
+            await asyncDb2.RollbackAsync();
+
+            // Attempt to read from the second connection again should be 100 records
+            asyncPerson1 = asyncDb.GetCollection<Person>();
+            Assert.Equal(100, await asyncPerson1.CountAsync());
+        }
+        
         [Fact]
         public async Task Transaction_Avoid_Dirty_Read()
         {
