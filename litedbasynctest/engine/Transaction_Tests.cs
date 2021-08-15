@@ -255,6 +255,44 @@ await Task.WhenAll(ta, tb);
         [Fact]
 public async Task Transaction_Read_Version()
 {
+            var data1 = DataGen.Person(1, 100).ToArray();
+            var data2 = DataGen.Person(101, 200).ToArray();
+
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+
+            var asyncPerson1 = asyncDb1.GetCollection<Person>();
+            // init person collection with 100 document
+            await asyncPerson1.InsertAsync(data1);
+
+            //Begin some transactions
+            using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
+            using var asyncDb3 = await asyncDb1.BeginTransactionAsync();
+
+            var asyncPerson2 = asyncDb2.GetCollection<Person>();
+            var asyncPerson3 = asyncDb3.GetCollection<Person>();
+
+            // We should see 100 record inserted before the transactions started
+            Assert.Equal(100, await asyncPerson2.CountAsync());
+            Assert.Equal(100, await asyncPerson3.CountAsync());
+
+            // Add 100 more records
+            await asyncPerson2.InsertAsync(data2);
+
+            // Attempt to read from the second connection should be nothing there
+            Assert.Equal(200, await asyncPerson2.CountAsync());
+
+            await asyncDb2.CommitAsync();
+
+            // Attempt to read from the second connection again should be 100 records. We shouldn't see the second lot of records because we are already in a transaction
+            Assert.Equal(100, await asyncPerson3.CountAsync());
+
             /*
 var data1 = DataGen.Person(1, 100).ToArray();
 var data2 = DataGen.Person(101, 200).ToArray();
@@ -311,9 +349,9 @@ count.Should().Be(data1.Length);
 await Task.WhenAll(ta, tb);
 }
             */
-}
+        }
 
-[Fact]
+        [Fact]
 public async Task Test_Transaction_States()
 {
             /*
