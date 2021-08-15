@@ -71,62 +71,93 @@ namespace Tests.LiteDB.Async
         [Fact]
         public async Task Transaction_Write_Lock_Timeout()
         {
+            var data1 = DataGen.Person(1, 100).ToArray();
+
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+            using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
+            using var asyncDb3 = await asyncDb1.BeginTransactionAsync();
+
+            // small timeout
+            await asyncDb1.PragmaAsync(Pragmas.TIMEOUT, 1);
+            await asyncDb2.PragmaAsync(Pragmas.TIMEOUT, 1);
+            await asyncDb3.PragmaAsync(Pragmas.TIMEOUT, 1);
+
+            var asyncPerson2 = asyncDb2.GetCollection<Person>();
+            // Add 100 more records
+            await asyncPerson2.InsertAsync(data1);
+
+            // Adding more records while running should timeout
+            var asyncPerson3 = asyncDb2.GetCollection<Person>();
+            var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
+            {
+                // Add 100 more records
+                await asyncPerson3.InsertAsync(data1);
+
+            });
+            Assert.StartsWith("LiteDb encounter an error.", exception.Message);
             //TODO: Change this test to use the new transaction infrastructure
-/*
-var data1 = DataGen.Person(1, 100).ToArray();
-var data2 = DataGen.Person(101, 200).ToArray();
+            /*
+            var data1 = DataGen.Person(1, 100).ToArray();
+            var data2 = DataGen.Person(101, 200).ToArray();
 
-using (var db = new LiteDatabase("filename=:memory:"))
-using (var asyncDb = new LiteDatabaseAsync(db, false))
-{
-    // small timeout
-    await asyncDb.PragmaAsync(Pragmas.TIMEOUT, 1);
+            using (var db = new LiteDatabase("filename=:memory:"))
+            using (var asyncDb = new LiteDatabaseAsync(db, false))
+            {
+                // small timeout
+                await asyncDb.PragmaAsync(Pragmas.TIMEOUT, 1);
 
-    var asyncPerson = asyncDb.GetCollection<Person>();
-    var person = db.GetCollection<Person>();
+                var asyncPerson = asyncDb.GetCollection<Person>();
+                var person = db.GetCollection<Person>();
 
-    // init person collection with 100 document
-    await asyncPerson.InsertAsync(data1);
+                // init person collection with 100 document
+                await asyncPerson.InsertAsync(data1);
 
-    var taskASemaphore = new SemaphoreSlim(0, 1);
-    var taskBSemaphore = new SemaphoreSlim(0, 1);
+                var taskASemaphore = new SemaphoreSlim(0, 1);
+                var taskBSemaphore = new SemaphoreSlim(0, 1);
 
-    // task A will open transaction and will insert +100 documents 
-    // but will commit only 2s later
-    var ta = Task.Run(async () =>
-    {
-        await asyncDb.BeginTransAsync();
+                // task A will open transaction and will insert +100 documents 
+                // but will commit only 2s later
+                var ta = Task.Run(async () =>
+                {
+                    await asyncDb.BeginTransAsync();
 
-        await asyncPerson.InsertAsync(data2);
+                    await asyncPerson.InsertAsync(data2);
 
-        taskBSemaphore.Release();
-        taskASemaphore.Wait();
+                    taskBSemaphore.Release();
+                    taskASemaphore.Wait();
 
-        var count = await asyncPerson.CountAsync();
+                    var count = await asyncPerson.CountAsync();
 
-        count.Should().Be(data1.Length + data2.Length);
+                    count.Should().Be(data1.Length + data2.Length);
 
-        await asyncDb.CommitAsync();
-    });
+                    await asyncDb.CommitAsync();
+                });
 
-    // task B will try delete all documents but will be locked during 1 second
-    var tb = Task.Run(() =>
-    {
-        taskBSemaphore.Wait();
+                // task B will try delete all documents but will be locked during 1 second
+                var tb = Task.Run(() =>
+                {
+                    taskBSemaphore.Wait();
 
-        db.BeginTrans();
-        person
-            .Invoking(personCol => personCol.DeleteMany("1 = 1"))
-            .Should()
-            .Throw<LiteException>()
-            .Where(ex => ex.ErrorCode == LiteException.LOCK_TIMEOUT);
+                    db.BeginTrans();
+                    person
+                        .Invoking(personCol => personCol.DeleteMany("1 = 1"))
+                        .Should()
+                        .Throw<LiteException>()
+                        .Where(ex => ex.ErrorCode == LiteException.LOCK_TIMEOUT);
 
-        taskASemaphore.Release();
-    });
+                    taskASemaphore.Release();
+                });
 
-    await Task.WhenAll(ta, tb);
-}*/
-}
+                await Task.WhenAll(ta, tb);
+            }*/
+        }
 
 
         [Fact]
