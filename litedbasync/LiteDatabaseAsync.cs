@@ -257,10 +257,6 @@ namespace LiteDB.Async
 
         public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
         {
-            if (_connectionString == null || _connectionString.Connection == ConnectionType.Direct)
-            {
-                throw new LiteAsyncException("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.");
-            }
             // Make a new database
             var result = new LiteDatabaseAsync(this);
             // Begin transaction on it

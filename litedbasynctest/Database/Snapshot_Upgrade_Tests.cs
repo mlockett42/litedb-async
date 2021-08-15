@@ -10,14 +10,11 @@ namespace Tests.LiteDB.Async
         [Fact]
         public async Task Transaction_Update_Upsert()
         {
-            //TODO: Change this test to use the new transaction infrastructure
-            /*
             using var db = new LiteDatabaseAsync(":memory:");
-            var col = db.GetCollection("test");
 
             // Transactions not supported ATM by Async
-            bool transactionCreated = await db.BeginTransAsync();
-            Assert.True(transactionCreated);
+            var db2 = await db.BeginTransactionAsync();
+            var col = db.GetCollection("test");
 
             int updatedDocs = await  col.UpdateManyAsync("{name: \"xxx\"}", BsonExpression.Create("_id = 1"));
             Assert.Equal(0, updatedDocs);
@@ -25,7 +22,6 @@ namespace Tests.LiteDB.Async
             await col.UpsertAsync(new BsonDocument() { ["_id"] = 1, ["name"] = "xxx" });
             var result = await col.FindByIdAsync(1);
             Assert.NotNull(result);
-            */
         }
     }
 }

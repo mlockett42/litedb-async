@@ -18,11 +18,7 @@ namespace Tests.LiteDB.Async
             //using (var db = new LiteDatabase("filename=:memory:"))
             using (var asyncDb = new LiteDatabaseAsync(new MemoryStream()))
             {
-                var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
-                    {
-                        var transDb = await asyncDb.BeginTransactionAsync();
-                    });
-                Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
+                var transDb = await asyncDb.BeginTransactionAsync();
             }
         }
 
@@ -39,11 +35,7 @@ namespace Tests.LiteDB.Async
             //using (var db = new LiteDatabase(connectionString))
             using (var asyncDb = new LiteDatabaseAsync(connectionString))
             {
-                var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
-                {
-                    var transDb = await asyncDb.BeginTransactionAsync();
-                });
-                Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
+                var transDb = await asyncDb.BeginTransactionAsync();
             }
         }
 
@@ -292,14 +284,7 @@ public async Task Transaction_Read_Version()
             var data1 = DataGen.Person(1, 100).ToArray();
             var data2 = DataGen.Person(101, 200).ToArray();
 
-            var connectionString = new ConnectionString()
-            {
-                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
-                Connection = ConnectionType.Shared,
-                Password = "hunter2"
-            };
-
-            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+            using var asyncDb1 = new LiteDatabaseAsync(new MemoryStream());
 
             var asyncPerson1 = asyncDb1.GetCollection<Person>();
             // init person collection with 100 document
