@@ -13,21 +13,21 @@ namespace Tests.LiteDB.Async
     public class Transactions_Tests
     {
         [Fact]
-        public void Transactions_Not_Allowed_On_Memmory_Streams()
+        public async Task Transactions_Not_Allowed_On_Memmory_Streams()
         {
             //using (var db = new LiteDatabase("filename=:memory:"))
             using (var asyncDb = new LiteDatabaseAsync(new MemoryStream()))
             {
-                var exception = Assert.Throws<LiteAsyncException>(() =>
+                var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
                     {
-                        var transDb = asyncDb.BeginTransaction();
+                        var transDb = await asyncDb.BeginTransactionAsync();
                     });
                 Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
             }
         }
 
         [Fact]
-        public void Transactions_Not_Allowed_On_Direct_Mode_Files()
+        public async Task Transactions_Not_Allowed_On_Direct_Mode_Files()
         {
             var connectionString = new ConnectionString()
             {
@@ -39,16 +39,16 @@ namespace Tests.LiteDB.Async
             //using (var db = new LiteDatabase(connectionString))
             using (var asyncDb = new LiteDatabaseAsync(connectionString))
             {
-                var exception = Assert.Throws<LiteAsyncException>(() =>
+                var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
                 {
-                    var transDb = asyncDb.BeginTransaction();
+                    var transDb = await asyncDb.BeginTransactionAsync();
                 });
                 Assert.Equal("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.", exception.Message);
             }
         }
 
         [Fact]
-        public void Transactions_Allowed_On_Shared_Mode_Files()
+        public async Task Transactions_Allowed_On_Shared_Mode_Files()
         {
             var connectionString = new ConnectionString()
             {
@@ -61,7 +61,10 @@ namespace Tests.LiteDB.Async
             using (var asyncDb = new LiteDatabaseAsync(connectionString))
             {
                 // Verify this function just does not throw an exception
-                var transDb = asyncDb.BeginTransaction();
+                using (var transDb = await asyncDb.BeginTransactionAsync())
+                {
+                    // We need to dispose of transDb before of it's parent othersise strange errors occur
+                }
             }
         }
 
@@ -141,7 +144,7 @@ using (var asyncDb = new LiteDatabaseAsync(db, false))
 
             //using (var db = new LiteDatabase(connectionString))
             using var asyncDb = new LiteDatabaseAsync(connectionString);
-            using var asyncDbTransaction = asyncDb.BeginTransaction();
+            using var asyncDbTransaction = await asyncDb.BeginTransactionAsync();
             //using var asyncDb2 = asyncDb.BeginTransaction();
 
             var asyncPerson1 = asyncDbTransaction.GetCollection<Person>();
@@ -157,7 +160,7 @@ using (var asyncDb = new LiteDatabaseAsync(db, false))
 
             // Attempt to read from the second connection again should be 100 records
             asyncPerson2 = asyncDb.GetCollection<Person>();
-            Assert.Equal(1000, await asyncPerson2.CountAsync());
+            Assert.Equal(100, await asyncPerson2.CountAsync());
 
             /*
 using (var db = new LiteDatabase(new MemoryStream()))

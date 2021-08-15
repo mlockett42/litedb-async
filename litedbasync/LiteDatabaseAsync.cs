@@ -71,6 +71,19 @@ namespace LiteDB.Async
         }
 
         /// <summary>
+        /// This private constructor starts a transaction on the same UnderlyingDatabase as sourceDatabaseAsync. Private because it should
+        /// only be called by the BeginTransactionAsync function
+        /// </summary>
+        /// <param name="sourceDatabaseAsync"></param>
+        private LiteDatabaseAsync(ILiteDatabaseAsync sourceDatabaseAsync)
+        {
+            UnderlyingDatabase = sourceDatabaseAsync.UnderlyingDatabase;
+            _backgroundThread = new Thread(BackgroundLoop);
+            _backgroundThread.Start();
+            _disposeOfWrappedDatabase = false;
+        }
+
+        /// <summary>
         /// Gets the underlying <see cref="ILiteDatabase"/>. Useful to access various operations not exposed by <see cref="ILiteDatabaseAsync"/>
         /// </summary>
         public ILiteDatabase UnderlyingDatabase { get; }
@@ -233,18 +246,31 @@ namespace LiteDB.Async
                 () => UnderlyingDatabase.Rollback());
         }
 
-        public ILiteDatabaseAsync BeginTransaction()
+        public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
         {
             if (_connectionString == null || _connectionString.Connection == ConnectionType.Direct)
             {
                 throw new LiteAsyncException("Cannot begin a transaction on that LiteDbAsync. Only shared, file based databases support transactions.");
             }
-            return null;
+            // Make a new database
+            var result = new LiteDatabaseAsync(this);
+            // Begin transaction on it
+            var tcs = new TaskCompletionSource<bool>();
+            result.Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingDatabase.BeginTrans());
+            });
+            await tcs.Task;
+            // Return once the new database is in transaction mode
+            return result;
         }
 
         public Task CommitAsync()
         {
-            throw new NotImplementedException();
+            var tcs = new TaskCompletionSource<bool>();
+            Enqueue(tcs, () => {
+                tcs.SetResult(UnderlyingDatabase.Commit());
+            });
+            return tcs.Task;
         }
 
         #endregion
