@@ -64,6 +64,16 @@ namespace LiteDB.Async
         /// </summary>
         /// <returns></returns>
         Task<ILiteDatabaseAsync> BeginTransactionAsync();
+
+        /// <summary>
+        /// Commit current transaction
+        /// </summary>
+        Task CommitAsync();
+
+        /// <summary>
+        /// Rollback current transaction
+        /// </summary>
+        Task RollbackAsync();
         #endregion
 
         #region Pragmas
@@ -115,7 +125,6 @@ namespace LiteDB.Async
         /// Rebuild all database to remove unused pages - reduce data file
         /// </summary>
         Task<long> RebuildAsync(RebuildOptions options = null);
-        Task CommitAsync();
 
         #endregion
     }

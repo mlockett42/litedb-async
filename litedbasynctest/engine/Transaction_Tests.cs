@@ -352,8 +352,36 @@ await Task.WhenAll(ta, tb);
         }
 
         [Fact]
-public async Task Test_Transaction_States()
-{
+        public async Task Test_Transaction_States_Rollback_Closes_Transaction()
+        {
+            var data1 = DataGen.Person(1, 100).ToArray();
+            var data2 = DataGen.Person(101, 200).ToArray();
+
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+            using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
+
+            var asyncPerson2 = asyncDb2.GetCollection<Person>();
+            await asyncPerson2.InsertAsync(data1);
+
+            await asyncDb2.RollbackAsync();
+
+            var exception = await Assert.ThrowsAsync<LiteAsyncException>(async () =>
+            {
+                await asyncPerson2.InsertAsync(data1);
+            });
+            Assert.Equal("Transaction Closed, no further writes are allowed.", exception.Message);
+        }
+
+        [Fact]
+        public async Task Test_Transaction_States_Commit_Closes_Transaction()
+        {
             var data1 = DataGen.Person(1, 100).ToArray();
             var data2 = DataGen.Person(101, 200).ToArray();
 
