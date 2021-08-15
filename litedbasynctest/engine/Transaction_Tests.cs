@@ -133,7 +133,7 @@ using (var asyncDb = new LiteDatabaseAsync(db, false))
         public async Task Transaction_Avoid_Dirty_Read()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
-            //var data2 = DataGen.Person(101, 200).ToArray();
+            var data2 = DataGen.Person(101, 200).ToArray();
 
             var connectionString = new ConnectionString()
             {
@@ -142,25 +142,26 @@ using (var asyncDb = new LiteDatabaseAsync(db, false))
                 Password = "hunter2"
             };
 
-            //using (var db = new LiteDatabase(connectionString))
             using var asyncDb = new LiteDatabaseAsync(connectionString);
-            using var asyncDbTransaction = await asyncDb.BeginTransactionAsync();
-            //using var asyncDb2 = asyncDb.BeginTransaction();
+            using var asyncDb2 = await asyncDb.BeginTransactionAsync();
 
-            var asyncPerson1 = asyncDbTransaction.GetCollection<Person>();
-
+            var asyncPerson1 = asyncDb.GetCollection<Person>();
             // init person collection with 100 document
             await asyncPerson1.InsertAsync(data1);
 
-            // Attempt to read from the second connection should be nothing there
-            var asyncPerson2 = asyncDb.GetCollection<Person>();
-            Assert.Equal(0, await asyncPerson2.CountAsync());
+            var asyncPerson2 = asyncDb2.GetCollection<Person>();
 
-            await asyncDbTransaction.CommitAsync();
+            // Add 100 more records
+            await asyncPerson2.InsertAsync(data2);
+
+            // Attempt to read from the second connection should be nothing there
+            Assert.Equal(100, await asyncPerson1.CountAsync());
+
+            await asyncDb2.CommitAsync();
 
             // Attempt to read from the second connection again should be 100 records
-            asyncPerson2 = asyncDb.GetCollection<Person>();
-            Assert.Equal(100, await asyncPerson2.CountAsync());
+            asyncPerson1 = asyncDb.GetCollection<Person>();
+            Assert.Equal(200, await asyncPerson1.CountAsync());
 
             /*
 using (var db = new LiteDatabase(new MemoryStream()))
