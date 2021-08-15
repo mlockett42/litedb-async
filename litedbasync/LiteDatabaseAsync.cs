@@ -242,6 +242,11 @@ namespace LiteDB.Async
             return null;
         }
 
+        public Task CommitAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Pragmas
