@@ -11,6 +11,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteCollectionAsync<T> Include<K>(Expression<Func<T, K>> keySelector)
         {
+            VerifyNoClosedTransaction();
             return new LiteCollectionAsync<T>(UnderlyingCollection.Include(keySelector), Database);
         }
 
@@ -20,6 +21,7 @@ namespace LiteDB.Async
         /// </summary>
         public ILiteCollectionAsync<T> Include(BsonExpression keySelector)
         {
+            VerifyNoClosedTransaction();
             return new LiteCollectionAsync<T>(UnderlyingCollection.Include(keySelector), Database);
         }
     }

@@ -43,5 +43,10 @@ namespace LiteDB.Async
         /// Getting entity mapper from current collection. Returns null if collection are BsonDocument type
         /// </summary>
         public EntityMapper EntityMapper => UnderlyingCollection.EntityMapper;
+
+        private void VerifyNoClosedTransaction()
+        {
+            Database.VerifyNoClosedTransaction();
+        }
    }
 }

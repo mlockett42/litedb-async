@@ -17,6 +17,7 @@ namespace LiteDB.Async
         private readonly bool _disposeOfWrappedDatabase = true;
         private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
         private static object _hashSetLock = new object();
+        private bool _isClosedTransaction = false;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -35,6 +36,14 @@ namespace LiteDB.Async
             UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
+        }
+
+        internal void VerifyNoClosedTransaction()
+        {
+            if (_isClosedTransaction)
+            {
+                throw new LiteAsyncException("Transaction Closed, no further writes are allowed.");
+            }
         }
 
         /// <summary>
@@ -264,13 +273,14 @@ namespace LiteDB.Async
             return result;
         }
 
-        public Task CommitAsync()
+        public async Task CommitAsync()
         {
             var tcs = new TaskCompletionSource<bool>();
             Enqueue(tcs, () => {
                 tcs.SetResult(UnderlyingDatabase.Commit());
             });
-            return tcs.Task;
+            await tcs.Task;
+            _isClosedTransaction = true;
         }
 
         #endregion
