@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
 using LiteDB.Engine;
+using litedbasync.Utils;
 
 namespace LiteDB.Async
 {
@@ -15,7 +16,7 @@ namespace LiteDB.Async
         private readonly CancellationTokenSource _shouldTerminate = new CancellationTokenSource();
         private readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
         private readonly bool _disposeOfWrappedDatabase = true;
-        private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
+        private static DefaultDictionary<ILiteDatabase, int> _wrappedDatabases = new DefaultDictionary<ILiteDatabase, int>();
         private static object _hashSetLock = new object();
         private bool _isClosedTransaction = false;
 
@@ -34,6 +35,7 @@ namespace LiteDB.Async
         {
             _connectionString = connectionString;
             UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
@@ -56,6 +58,7 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null, Stream logStream = null)
         {
             UnderlyingDatabase = new LiteDatabase(stream, mapper, logStream);
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
@@ -68,15 +71,22 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(ILiteDatabase wrappedDatabase, bool disposeOfWrappedDatabase = true)
         {
             UnderlyingDatabase = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
-            lock(_hashSetLock) {
-                if (_wrappedDatabases.Contains(UnderlyingDatabase)) {
-                    throw new LiteAsyncException("You can only have one LiteDatabaseAsync per LiteDatabase.");
-                }
-                _wrappedDatabases.Add(UnderlyingDatabase);
-            }
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
+        }
+
+        private static void RecordUnderlyingDatabaseInMap(ILiteDatabase underlyingDatabase)
+        {
+            lock (_hashSetLock)
+            {
+                if (_wrappedDatabases.ContainsKey(underlyingDatabase))
+                {
+                    throw new LiteAsyncException("You can only have one LiteDatabaseAsync per LiteDatabase.");
+                }
+                _wrappedDatabases[underlyingDatabase] = _wrappedDatabases[underlyingDatabase] + 1;
+            }
         }
 
         /// <summary>
@@ -87,6 +97,10 @@ namespace LiteDB.Async
         private LiteDatabaseAsync(ILiteDatabaseAsync sourceDatabaseAsync)
         {
             UnderlyingDatabase = sourceDatabaseAsync.UnderlyingDatabase;
+            lock (_hashSetLock)
+            {
+                _wrappedDatabases[UnderlyingDatabase] = _wrappedDatabases[UnderlyingDatabase] + 1;
+            }
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = false;
@@ -387,10 +401,19 @@ namespace LiteDB.Async
                     // give the thread 5 seconds to exit... must not block forever here
                     _backgroundThread.Join(TimeSpan.FromSeconds(5));
                 }
-                lock(_hashSetLock) {
-                    _wrappedDatabases.Remove(UnderlyingDatabase);
+                int newCount;
+                lock (_hashSetLock) {
+                    newCount = _wrappedDatabases[UnderlyingDatabase] - 1;
+                    if (newCount == 0)
+                    {
+                        _wrappedDatabases.Remove(UnderlyingDatabase);
+                    }
+                    else
+                    {
+                        _wrappedDatabases[UnderlyingDatabase] = newCount;
+                    }
                 }
-                if (_disposeOfWrappedDatabase) {
+                if (_disposeOfWrappedDatabase && newCount == 0) {
                     UnderlyingDatabase.Dispose();
                 }
             }

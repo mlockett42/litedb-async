@@ -308,6 +308,23 @@ public async Task Transaction_Read_Version()
             });
             Assert.Equal("Transaction Closed, no further writes are allowed.", exception.Message);
         }
+
+        [Fact]
+        public async Task Transactions_Out_Of_Order_Disposes_Are_OK()
+        {
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            var asyncDb = new LiteDatabaseAsync(connectionString);
+            var transDb = await asyncDb.BeginTransactionAsync();
+
+            // Dispose the parent first
+            asyncDb.Dispose();
+            transDb.Dispose();
+        }
     }
-            
 }
