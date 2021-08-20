@@ -357,7 +357,10 @@ namespace LiteDB.Async
                     _shouldTerminate.Cancel();
                     
                     // give the thread 5 seconds to exit... must not block forever here
-                    _backgroundThread.Join(TimeSpan.FromSeconds(5));
+                    if (!_backgroundThread.Join(TimeSpan.FromSeconds(5)))
+                    {
+                        var tooslow = true;
+                    }
                 }
                 lock(_hashSetLock) {
                     _wrappedDatabases.Remove(UnderlyingDatabase);

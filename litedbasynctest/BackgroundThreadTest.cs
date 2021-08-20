@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Xunit;
 using LiteDB.Async;
 using System.IO;
@@ -21,6 +22,24 @@ namespace Tests.LiteDB.Async
                 
             }
             File.Delete(databasePath);
+        }
+
+        [Fact]
+        public async Task TestCanDisposeDatabaseTimely()
+        {
+            string databasePath = Path.Combine(Path.GetTempPath(),
+                "litedbn-async-testing-" + Path.GetRandomFileName() + ".db");
+            var db = new LiteDatabaseAsync(databasePath);
+
+            // Ensure to do some stuff to open the database
+            var collection = db.GetCollection<SimplePerson>();
+            await collection.InsertAsync(new SimplePerson()).ConfigureAwait(false);
+
+            var stopwatch = Stopwatch.StartNew();
+            db.Dispose();
+            stopwatch.Stop();
+
+            Assert.InRange(stopwatch.Elapsed.TotalSeconds, 0, 4.99);
         }
 
         [Fact]
