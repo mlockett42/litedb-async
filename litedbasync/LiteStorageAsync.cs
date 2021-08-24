@@ -22,11 +22,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> FindByIdAsync(TFileId id)
         {
-            var tcs = new TaskCompletionSource<LiteFileInfo<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.FindById(id));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.FindById(id));
         }
 
         /// <summary>
@@ -34,11 +31,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(BsonExpression predicate)
         {
-            var tcs = new TaskCompletionSource<IEnumerable<LiteFileInfo<TFileId>>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Find(predicate));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Find(predicate));
         }
 
         /// <summary>
@@ -46,11 +40,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(string predicate, BsonDocument parameters)
         {
-            var tcs = new TaskCompletionSource<IEnumerable<LiteFileInfo<TFileId>>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Find(predicate, parameters));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Find(predicate, parameters));
         }
 
         /// <summary>
@@ -58,11 +49,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(string predicate, params BsonValue[] args)
         {
-            var tcs = new TaskCompletionSource<IEnumerable<LiteFileInfo<TFileId>>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Find(predicate, args));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Find(predicate, args));
         }
 
         /// <summary>
@@ -70,11 +58,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(Expression<Func<LiteFileInfo<TFileId>, bool>> predicate)
         {
-            var tcs = new TaskCompletionSource<IEnumerable<LiteFileInfo<TFileId>>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Find(predicate));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Find(predicate));
         }
 
         /// <summary>
@@ -82,11 +67,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAllAsync()
         {
-            var tcs = new TaskCompletionSource<IEnumerable<LiteFileInfo<TFileId>>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.FindAll());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.FindAll());
         }
 
         /// <summary>
@@ -94,11 +76,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> ExistsAsync(TFileId id)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Exists(id));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Exists(id));
         }
 
         /// <summary>
@@ -106,11 +85,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileStream<TFileId>> OpenWriteAsync(TFileId id, string filename, BsonDocument metadata = null)
         {
-            var tcs = new TaskCompletionSource<LiteFileStream<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.OpenWrite(id, filename, metadata));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.OpenWrite(id, filename, metadata));
         }
 
         /// <summary>
@@ -118,11 +94,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> UploadAsync(TFileId id, string filename, Stream stream, BsonDocument metadata = null)
         {
-            var tcs = new TaskCompletionSource<LiteFileInfo<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Upload(id, filename, stream, metadata));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Upload(id, filename, stream, metadata));
         }
 
         /// <summary>
@@ -130,11 +103,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> UploadAsync(TFileId id, string filename)
         {
-            var tcs = new TaskCompletionSource<LiteFileInfo<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Upload(id, filename));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Upload(id, filename));
         }
 
         /// <summary>
@@ -142,11 +112,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> SetMetadataAsync(TFileId id, BsonDocument metadata)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.SetMetadata(id, metadata));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.SetMetadata(id, metadata));
         }
 
         /// <summary>
@@ -154,11 +121,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileStream<TFileId>> OpenReadAsync(TFileId id)
         {
-            var tcs = new TaskCompletionSource<LiteFileStream<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.OpenRead(id));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.OpenRead(id));
         }
 
         /// <summary>
@@ -166,11 +130,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> DownloadAsync(TFileId id, Stream stream)
         {
-            var tcs = new TaskCompletionSource<LiteFileInfo<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Download(id, stream));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Download(id, stream));
         }
 
         /// <summary>
@@ -178,11 +139,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> DownloadAsync(TFileId id, string filename, bool overwritten)
         {
-            var tcs = new TaskCompletionSource<LiteFileInfo<TFileId>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Download(id, filename, overwritten));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Download(id, filename, overwritten));
         }
 
         /// <summary>
@@ -190,11 +148,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DeleteAsync(TFileId id)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedStorage.Delete(id));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.Enqueue(
+                () => _wrappedStorage.Delete(id));
         }
     }
 }

@@ -43,13 +43,16 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public void TestOpeningDatabaseASecondTimeCausesAnException()
+        public async Task TestOpeningDatabaseASecondTimeCausesAnException()
         {
             string databasePath = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db");
             using(var db1 = new LiteDatabaseAsync(databasePath))
             {
-                Assert.Throws<IOException>(() => {
-                    var db2 = new LiteDatabaseAsync(databasePath);
+                await db1.GetCollection<SimplePerson>().InsertAsync(new SimplePerson());
+                
+                Assert.ThrowsAsync<IOException>(async () => {
+                    using var db2 = new LiteDatabaseAsync(databasePath);
+                    await db2.GetCollection<SimplePerson>().InsertAsync(new SimplePerson());
                 });
             }
             File.Delete(databasePath);
