@@ -12,7 +12,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpdateAsync(T entity)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.Update(entity));
 
         }
@@ -22,7 +22,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpdateAsync(BsonValue id, T entity)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.Update(id, entity));
         }
 
@@ -31,7 +31,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> UpdateAsync(IEnumerable<T> entities)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.Update(entities));
         }
 
@@ -41,7 +41,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> UpdateManyAsync(BsonExpression transform, BsonExpression predicate)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.UpdateMany(transform, predicate));
         }
 
@@ -51,7 +51,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> UpdateManyAsync(Expression<Func<T, T>> extend, Expression<Func<T, bool>> predicate)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.UpdateMany(extend, predicate));
         }
     }

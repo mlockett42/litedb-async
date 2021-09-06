@@ -14,7 +14,7 @@ namespace LiteDB.Async
         /// <param name="unique">If is a unique index</param>
         public Task<bool> EnsureIndexAsync(string name, BsonExpression expression, bool unique = false)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.EnsureIndex(name, expression, unique));
         }
 
@@ -25,7 +25,7 @@ namespace LiteDB.Async
         /// <param name="unique">If is a unique index</param>
         public Task<bool> EnsureIndexAsync(BsonExpression expression, bool unique = false)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.EnsureIndex(expression, unique));
         }
 
@@ -36,7 +36,7 @@ namespace LiteDB.Async
         /// <param name="unique">Create a unique keys index?</param>
         public Task<bool> EnsureIndexAsync<K>(Expression<Func<T, K>> keySelector, bool unique = false)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.EnsureIndex(keySelector, unique));
         }
 
@@ -48,7 +48,7 @@ namespace LiteDB.Async
         /// <param name="unique">Create a unique keys index?</param>
         public Task<bool> EnsureIndexAsync<K>(string name, Expression<Func<T, K>> keySelector, bool unique = false)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.EnsureIndex<K>(name, keySelector, unique));
         }
 
@@ -57,7 +57,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DropIndexAsync(string name)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DropIndex(name));
         }
     }

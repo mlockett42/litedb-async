@@ -230,7 +230,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<BsonDocument>> ToDocumentsAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.ToDocuments());
         }
 
@@ -239,7 +239,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<T>> ToEnumerableAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.ToEnumerable());
         }
 
@@ -248,7 +248,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<List<T>> ToListAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.ToList());
         }
 
@@ -257,7 +257,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T[]> ToArrayAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.ToArray());
         }
 
@@ -284,7 +284,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> SingleAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.Single());
         }
 
@@ -293,7 +293,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> SingleOrDefaultAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.SingleOrDefault());
         }
 
@@ -302,7 +302,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> FirstAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.First());
         }
 
@@ -311,7 +311,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> FirstOrDefaultAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.FirstOrDefault());
         }
 
@@ -324,7 +324,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> CountAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.Count());
         }
 
@@ -333,7 +333,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<long> LongCountAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.LongCount());
         }
 
@@ -342,7 +342,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> ExistsAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.Exists());
         }
 
@@ -352,7 +352,7 @@ namespace LiteDB.Async
 
         public Task<int> IntoAsync(string newCollection, BsonAutoId autoId = BsonAutoId.ObjectId)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedQuery.Into(newCollection, autoId));
         }
 

@@ -11,7 +11,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DeleteAsync(BsonValue id)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.Delete(id));
         }
 
@@ -20,7 +20,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(BsonExpression predicate)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DeleteMany(predicate));
         }
 
@@ -29,7 +29,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(string predicate, BsonDocument parameters)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DeleteMany(predicate, parameters));
         }
 
@@ -38,7 +38,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(string predicate, params BsonValue[] args)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DeleteMany(predicate, args));
         }
 
@@ -47,7 +47,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(Expression<Func<T, bool>> predicate)
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DeleteMany(predicate));
         }
  
@@ -56,7 +56,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteAllAsync()
         {
-            return Database.Enqueue(
+            return Database.EnqueueAsync(
                 () => UnderlyingCollection.DeleteAll());
         }
    }

@@ -22,7 +22,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> FindByIdAsync(TFileId id)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.FindById(id));
         }
 
@@ -31,7 +31,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(BsonExpression predicate)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Find(predicate));
         }
 
@@ -40,7 +40,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(string predicate, BsonDocument parameters)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Find(predicate, parameters));
         }
 
@@ -49,7 +49,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(string predicate, params BsonValue[] args)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Find(predicate, args));
         }
 
@@ -58,7 +58,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAsync(Expression<Func<LiteFileInfo<TFileId>, bool>> predicate)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Find(predicate));
         }
 
@@ -67,7 +67,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<LiteFileInfo<TFileId>>> FindAllAsync()
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.FindAll());
         }
 
@@ -76,7 +76,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> ExistsAsync(TFileId id)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Exists(id));
         }
 
@@ -85,7 +85,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileStream<TFileId>> OpenWriteAsync(TFileId id, string filename, BsonDocument metadata = null)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.OpenWrite(id, filename, metadata));
         }
 
@@ -94,7 +94,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> UploadAsync(TFileId id, string filename, Stream stream, BsonDocument metadata = null)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Upload(id, filename, stream, metadata));
         }
 
@@ -103,7 +103,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> UploadAsync(TFileId id, string filename)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Upload(id, filename));
         }
 
@@ -112,7 +112,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> SetMetadataAsync(TFileId id, BsonDocument metadata)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.SetMetadata(id, metadata));
         }
 
@@ -121,7 +121,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileStream<TFileId>> OpenReadAsync(TFileId id)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.OpenRead(id));
         }
 
@@ -130,7 +130,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> DownloadAsync(TFileId id, Stream stream)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Download(id, stream));
         }
 
@@ -139,7 +139,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<LiteFileInfo<TFileId>> DownloadAsync(TFileId id, string filename, bool overwritten)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Download(id, filename, overwritten));
         }
 
@@ -148,7 +148,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DeleteAsync(TFileId id)
         {
-            return _liteDatabaseAsync.Enqueue(
+            return _liteDatabaseAsync.EnqueueAsync(
                 () => _wrappedStorage.Delete(id));
         }
     }

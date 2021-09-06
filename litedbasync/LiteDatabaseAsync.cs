@@ -132,7 +132,7 @@ namespace LiteDB.Async
             }
         }
 
-        internal Task<T> Enqueue<T>(LiteAsyncDelegate<T> function)
+        internal Task<T> EnqueueAsync<T>(LiteAsyncDelegate<T> function)
         {
             var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -211,7 +211,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> BeginTransAsync()
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.BeginTrans());
         }
 
@@ -220,7 +220,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> CommitAsync()
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.Commit());
         }
 
@@ -229,7 +229,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RollbackAsync()
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.Rollback());
         }
 
@@ -241,7 +241,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<BsonValue> PragmaAsync(string name)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.Pragma(name));
         }
 
@@ -250,7 +250,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<BsonValue> PragmaAsync(string name, BsonValue value)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.Pragma(name, value));
         }
         #endregion
@@ -262,7 +262,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<string>> GetCollectionNamesAsync()
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.GetCollectionNames());
         }
 
@@ -271,7 +271,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> CollectionExistsAsync(string name)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.CollectionExists(name));
         }
 
@@ -280,7 +280,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DropCollectionAsync(string name)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.DropCollection(name));
         }
 
@@ -289,7 +289,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RenameCollectionAsync(string oldName, string newName)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.RenameCollection(oldName, newName));
         }
 
@@ -302,7 +302,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task CheckpointAsync()
         {
-            return Enqueue(() =>
+            return EnqueueAsync(() =>
             {
                 UnderlyingDatabase.Checkpoint();
                 return true;
@@ -314,7 +314,7 @@ namespace LiteDB.Async
         /// </summary>
         public Task<long> RebuildAsync(RebuildOptions options = null)
         {
-            return Enqueue(
+            return EnqueueAsync(
                 () => UnderlyingDatabase.Rebuild(options));
         }
 
