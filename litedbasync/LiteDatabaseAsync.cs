@@ -243,16 +243,6 @@ namespace LiteDB.Async
 
         #region Transactions
         /// <summary>
-        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
-        /// Return true if transaction was created or false if current thread already in a transaction.
-        /// </summary>
-        public Task<bool> BeginTransAsync()
-        {
-            return EnqueueAsync(
-                () => UnderlyingDatabase.BeginTrans());
-        }
-
-        /// <summary>
         /// Commit current transaction
         /// </summary>
         public async Task<bool> CommitAsync()
@@ -274,16 +264,18 @@ namespace LiteDB.Async
             return result;
         }
 
+        /// <summary>
+        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
+        /// Return true if transaction was created or false if current thread already in a transaction.
+        /// </summary>
         public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
         {
             // Make a new database
             var result = new LiteDatabaseAsync(this);
             // Begin transaction on it
-            var tcs = new TaskCompletionSource<bool>();
             await EnqueueAsync<bool>(() => 
                 UnderlyingDatabase.BeginTrans()
             );
-            await tcs.Task;
             // Return once the new database is in transaction mode
             return result;
         }
