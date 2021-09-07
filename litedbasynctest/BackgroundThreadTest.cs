@@ -50,7 +50,7 @@ namespace Tests.LiteDB.Async
             {
                 await db1.GetCollection<SimplePerson>().InsertAsync(new SimplePerson());
                 
-                Assert.ThrowsAsync<IOException>(async () => {
+                await Assert.ThrowsAsync<IOException>(async () => {
                     using var db2 = new LiteDatabaseAsync(databasePath);
                     await db2.GetCollection<SimplePerson>().InsertAsync(new SimplePerson());
                 });

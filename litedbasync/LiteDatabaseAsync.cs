@@ -169,6 +169,7 @@ namespace LiteDB.Async
 
         internal Task<T> EnqueueAsync<T>(LiteAsyncDelegate<T> function)
         {
+            VerifyNoClosedTransaction();
             var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void Function()

@@ -10,7 +10,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<BsonValue> InsertAsync(T entity)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.Insert(entity));
         }
@@ -20,7 +19,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task InsertAsync(BsonValue id, T entity)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(() => {
                 UnderlyingCollection.Insert(id, entity);
                 return true;
@@ -32,7 +30,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> InsertAsync(IEnumerable<T> entities)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.Insert(entities));
         }
@@ -42,7 +39,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> InsertBulkAsync(IEnumerable<T> entities, int batchSize = 5000)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.InsertBulk(entities, batchSize));
         }

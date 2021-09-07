@@ -10,7 +10,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpsertAsync(T entity)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.Upsert(entity));
         }
@@ -20,7 +19,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> UpsertAsync(IEnumerable<T> entities)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.Upsert(entities));
         }
@@ -30,7 +28,6 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpsertAsync(BsonValue id, T entity)
         {
-            VerifyNoClosedTransaction();
             return Database.EnqueueAsync(
                 () => UnderlyingCollection.Upsert(id, entity));
         }
