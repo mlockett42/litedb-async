@@ -254,10 +254,12 @@ namespace LiteDB.Async
         /// <summary>
         /// Commit current transaction
         /// </summary>
-        public Task<bool> CommitAsync()
+        public async Task<bool> CommitAsync()
         {
-            return EnqueueAsync(
+            var result = await EnqueueAsync(
                 () => UnderlyingDatabase.Commit());
+            _isClosedTransaction = true;
+            return result;
         }
 
         /// <summary>
@@ -265,8 +267,10 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RollbackAsync()
         {
-            return EnqueueAsync(
+            var result = EnqueueAsync(
                 () => UnderlyingDatabase.Rollback());
+            _isClosedTransaction = true;
+            return result;
         }
 
         public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
@@ -275,32 +279,12 @@ namespace LiteDB.Async
             var result = new LiteDatabaseAsync(this);
             // Begin transaction on it
             var tcs = new TaskCompletionSource<bool>();
-            result.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.BeginTrans());
-            });
+            await EnqueueAsync<bool>(() => 
+                UnderlyingDatabase.BeginTrans()
+            );
             await tcs.Task;
             // Return once the new database is in transaction mode
             return result;
-        }
-
-        public async Task CommitAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Commit());
-            });
-            await tcs.Task;
-            _isClosedTransaction = true;
-        }
-
-        public async Task RollbackAsync()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Rollback());
-            });
-            await tcs.Task;
-            _isClosedTransaction = true;
         }
 
         #endregion

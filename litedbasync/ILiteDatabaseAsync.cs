@@ -68,12 +68,12 @@ namespace LiteDB.Async
         /// <summary>
         /// Commit current transaction
         /// </summary>
-        Task CommitAsync();
+        Task<bool> CommitAsync();
 
         /// <summary>
         /// Rollback current transaction
         /// </summary>
-        Task RollbackAsync();
+        Task<bool> RollbackAsync();
         #endregion
 
         #region Pragmas
