@@ -98,9 +98,9 @@ namespace Tests.LiteDB.Async
                     await asyncPerson.InsertAsync(data2);
 
                     taskBSemaphore.Release();
-                    taskASemaphore.Wait();
+                    await taskASemaphore.WaitAsync();
 
-                    var count = person.Count();
+                    var count = await asyncPerson.CountAsync();
 
                     count.Should().Be(data1.Length + data2.Length);
 

@@ -13,7 +13,7 @@ namespace LiteDB.Async
         private readonly Thread _backgroundThread;
         private readonly SemaphoreSlim _newTaskArrived = new SemaphoreSlim(initialCount: 0, maxCount: int.MaxValue);
         private readonly CancellationTokenSource _shouldTerminate = new CancellationTokenSource();
-        private readonly ConcurrentQueue<LiteAsyncDelegate> _queue = new ConcurrentQueue<LiteAsyncDelegate>();
+        private readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
         private readonly bool _disposeOfWrappedDatabase = true;
         private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
         private static object _hashSetLock = new object();
@@ -132,13 +132,15 @@ namespace LiteDB.Async
             }
         }
 
-        internal void Enqueue<T>(TaskCompletionSource<T> tcs, LiteAsyncDelegate function)
+        internal Task<T> EnqueueAsync<T>(LiteAsyncDelegate<T> function)
         {
+            var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+
             void Function()
             {
                 try
                 {
-                    function();
+                    tcs.SetResult(function());
                 }
                 catch (Exception ex)
                 {
@@ -148,6 +150,7 @@ namespace LiteDB.Async
 
             _queue.Enqueue(Function);
             _newTaskArrived.Release();
+            return tcs.Task;
         }
 
         #region Collections
@@ -208,11 +211,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> BeginTransAsync()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.BeginTrans());
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.BeginTrans());
         }
 
         /// <summary>
@@ -220,11 +220,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> CommitAsync()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Commit());
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.Commit());
         }
 
         /// <summary>
@@ -232,11 +229,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RollbackAsync()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Rollback());
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.Rollback());
         }
 
         #endregion
@@ -247,11 +241,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<BsonValue> PragmaAsync(string name)
         {
-            var tcs = new TaskCompletionSource<BsonValue>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Pragma(name));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.Pragma(name));
         }
 
         /// <summary>
@@ -259,11 +250,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<BsonValue> PragmaAsync(string name, BsonValue value)
         {
-            var tcs = new TaskCompletionSource<BsonValue>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Pragma(name, value));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.Pragma(name, value));
         }
         #endregion
 
@@ -274,11 +262,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<string>> GetCollectionNamesAsync()
         {
-            var tcs = new TaskCompletionSource<IEnumerable<string>>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.GetCollectionNames());
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.GetCollectionNames());
         }
 
         /// <summary>
@@ -286,11 +271,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> CollectionExistsAsync(string name)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.CollectionExists(name));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.CollectionExists(name));
         }
 
         /// <summary>
@@ -298,11 +280,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DropCollectionAsync(string name)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.DropCollection(name));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.DropCollection(name));
         }
 
         /// <summary>
@@ -310,11 +289,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RenameCollectionAsync(string oldName, string newName)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.RenameCollection(oldName, newName));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.RenameCollection(oldName, newName));
         }
 
         #endregion
@@ -326,12 +302,11 @@ namespace LiteDB.Async
         /// </summary>
         public Task CheckpointAsync()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Enqueue(tcs, () => {
+            return EnqueueAsync(() =>
+            {
                 UnderlyingDatabase.Checkpoint();
-                tcs.SetResult(true);
+                return true;
             });
-            return tcs.Task;
         }
 
         /// <summary>
@@ -339,11 +314,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<long> RebuildAsync(RebuildOptions options = null)
         {
-            var tcs = new TaskCompletionSource<long>();
-            Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingDatabase.Rebuild(options));
-            });
-            return tcs.Task;
+            return EnqueueAsync(
+                () => UnderlyingDatabase.Rebuild(options));
         }
 
         #endregion

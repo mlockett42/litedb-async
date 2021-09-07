@@ -11,11 +11,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> DeleteAsync(BsonValue id)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.Delete(id));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.Delete(id));
         }
 
         /// <summary>
@@ -23,11 +20,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(BsonExpression predicate)
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.DeleteMany(predicate));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.DeleteMany(predicate));
         }
 
         /// <summary>
@@ -35,11 +29,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(string predicate, BsonDocument parameters)
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.DeleteMany(predicate, parameters));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.DeleteMany(predicate, parameters));
         }
 
         /// <summary>
@@ -47,11 +38,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(string predicate, params BsonValue[] args)
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.DeleteMany(predicate, args));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.DeleteMany(predicate, args));
         }
 
         /// <summary>
@@ -59,11 +47,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteManyAsync(Expression<Func<T, bool>> predicate)
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.DeleteMany(predicate));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.DeleteMany(predicate));
         }
  
          /// <summary>
@@ -71,11 +56,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> DeleteAllAsync()
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.DeleteAll());
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.DeleteAll());
         }
    }
 }

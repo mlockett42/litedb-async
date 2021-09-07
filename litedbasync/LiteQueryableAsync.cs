@@ -230,11 +230,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<BsonDocument>> ToDocumentsAsync()
         {
-            var tcs = new TaskCompletionSource<IEnumerable<BsonDocument>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.ToDocuments());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.ToDocuments());
         }
 
         /// <summary>
@@ -242,11 +239,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<IEnumerable<T>> ToEnumerableAsync()
         {
-            var tcs = new TaskCompletionSource<IEnumerable<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.ToEnumerable());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.ToEnumerable());
         }
 
         /// <summary>
@@ -254,11 +248,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<List<T>> ToListAsync()
         {
-            var tcs = new TaskCompletionSource<List<T>>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.ToList());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.ToList());
         }
 
         /// <summary>
@@ -266,11 +257,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T[]> ToArrayAsync()
         {
-            var tcs = new TaskCompletionSource<T[]>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.ToArray());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.ToArray());
         }
 
         /// <summary>
@@ -296,11 +284,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> SingleAsync()
         {
-            var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.Single());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.Single());
         }
 
         /// <summary>
@@ -308,11 +293,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> SingleOrDefaultAsync()
         {
-            var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.SingleOrDefault());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.SingleOrDefault());
         }
 
         /// <summary>
@@ -320,11 +302,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> FirstAsync()
         {
-            var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.First());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.First());
         }
 
         /// <summary>
@@ -332,11 +311,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<T> FirstOrDefaultAsync()
         {
-            var tcs = new TaskCompletionSource<T>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.FirstOrDefault());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.FirstOrDefault());
         }
 
         #endregion
@@ -348,11 +324,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> CountAsync()
         {
-            var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.Count());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.Count());
         }
 
         /// <summary>
@@ -360,11 +333,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<long> LongCountAsync()
         {
-            var tcs = new TaskCompletionSource<long>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.LongCount());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.LongCount());
         }
 
         /// <summary>
@@ -372,11 +342,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> ExistsAsync()
         {
-            var tcs = new TaskCompletionSource<bool>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.Exists());
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.Exists());
         }
 
         #endregion
@@ -385,11 +352,8 @@ namespace LiteDB.Async
 
         public Task<int> IntoAsync(string newCollection, BsonAutoId autoId = BsonAutoId.ObjectId)
         {
-            var tcs = new TaskCompletionSource<int>();
-            _liteDatabaseAsync.Enqueue(tcs, () => {
-                tcs.SetResult(_wrappedQuery.Into(newCollection, autoId));
-            });
-            return tcs.Task;
+            return _liteDatabaseAsync.EnqueueAsync(
+                () => _wrappedQuery.Into(newCollection, autoId));
         }
 
         #endregion

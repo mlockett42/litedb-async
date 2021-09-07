@@ -1,4 +1,4 @@
 namespace LiteDB.Async
 {
-    internal delegate void LiteAsyncDelegate();
+    internal delegate T LiteAsyncDelegate<out T>();
 }

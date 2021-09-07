@@ -10,11 +10,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpsertAsync(T entity)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.Upsert(entity));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.Upsert(entity));
         }
 
         /// <summary>
@@ -22,11 +19,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<int> UpsertAsync(IEnumerable<T> entities)
         {
-            var tcs = new TaskCompletionSource<int>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.Upsert(entities));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.Upsert(entities));
         }
 
         /// <summary>
@@ -34,11 +28,8 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> UpsertAsync(BsonValue id, T entity)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            Database.Enqueue(tcs, () => {
-                tcs.SetResult(UnderlyingCollection.Upsert(id, entity));
-            });
-            return tcs.Task;
+            return Database.EnqueueAsync(
+                () => UnderlyingCollection.Upsert(id, entity));
         }
     }
 }
