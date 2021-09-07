@@ -59,21 +59,6 @@ namespace LiteDB.Async
         #endregion
 
         #region Transactions
-        /// <summary>
-        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
-        /// Return true if transaction was created or false if current thread already in a transaction.
-        /// </summary>
-        Task<bool> BeginTransAsync();
-
-        /// <summary>
-        /// Commit current transaction
-        /// </summary>
-        Task<bool> CommitAsync();
-
-        /// <summary>
-        /// Rollback current transaction
-        /// </summary>
-        Task<bool> RollbackAsync();
 
         #endregion
 
