@@ -7,12 +7,11 @@ namespace Tests.LiteDB.Async
 {
     public class Snapshot_Upgrade_Tests
     {
-        [Fact(Skip = "Temporaily skip never exits")]
+        [Fact]
         public async Task Transaction_Update_Upsert()
         {
             using var db = new LiteDatabaseAsync(":memory:");
 
-            // Transactions not supported ATM by Async
             var db2 = await db.BeginTransactionAsync();
             var col = db.GetCollection("test");
 
