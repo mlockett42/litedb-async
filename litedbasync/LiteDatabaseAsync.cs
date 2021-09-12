@@ -94,7 +94,7 @@ namespace LiteDB.Async
         /// only be called by the BeginTransactionAsync function
         /// </summary>
         /// <param name="sourceDatabaseAsync"></param>
-        private LiteDatabaseAsync(ILiteDatabaseAsync sourceDatabaseAsync)
+        private LiteDatabaseAsync(ILiteDatabaseAsync sourceDatabaseAsync, bool disposeOfWrappedDatabase)
         {
             UnderlyingDatabase = sourceDatabaseAsync.UnderlyingDatabase;
             lock (_hashSetLock)
@@ -103,7 +103,7 @@ namespace LiteDB.Async
             }
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
-            _disposeOfWrappedDatabase = false;
+            _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace LiteDB.Async
         public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
         {
             // Make a new database
-            var result = new LiteDatabaseAsync(this);
+            var result = new LiteDatabaseAsync(this, _disposeOfWrappedDatabase);
             // Begin transaction on it
             await result.EnqueueAsync<bool>(() =>
                 UnderlyingDatabase.BeginTrans()

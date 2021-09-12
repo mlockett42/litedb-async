@@ -125,7 +125,7 @@ namespace Tests.LiteDB.Async
             asyncPerson1 = asyncDb.GetCollection<Person>();
             Assert.Equal(100, await asyncPerson1.CountAsync());
         }
-        
+
         [Fact]
         public async Task Transaction_Avoid_Dirty_Read()
         {
