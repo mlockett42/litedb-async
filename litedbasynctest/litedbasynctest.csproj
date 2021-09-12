@@ -36,4 +36,10 @@
     <EmbeddedResource Include="Utils\Json\person.json" />
     <EmbeddedResource Include="Utils\Json\zip.json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
