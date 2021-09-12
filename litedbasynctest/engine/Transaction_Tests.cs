@@ -10,7 +10,7 @@ namespace Tests.LiteDB.Async
 {
     public class Transactions_Tests
     {
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transactions_Allowed_On_Memmory_Streams()
         {
             using (var asyncDb = new LiteDatabaseAsync(new MemoryStream()))
@@ -19,7 +19,7 @@ namespace Tests.LiteDB.Async
             }
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transactions__Allowed_On_Direct_Mode_Files()
         {
             var connectionString = new ConnectionString()
@@ -35,7 +35,7 @@ namespace Tests.LiteDB.Async
             }
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transactions_Allowed_On_Shared_Mode_Files()
         {
             var connectionString = new ConnectionString()
@@ -55,7 +55,7 @@ namespace Tests.LiteDB.Async
             }
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transaction_Write_Lock_Timeout()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -91,7 +91,7 @@ namespace Tests.LiteDB.Async
             Assert.StartsWith("LiteDb encounter an error.", exception.Message);
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transaction_Avoid_Dirty_Read_Rollback()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -126,7 +126,7 @@ namespace Tests.LiteDB.Async
             Assert.Equal(100, await asyncPerson1.CountAsync());
         }
         
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transaction_Avoid_Dirty_Read()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -218,9 +218,9 @@ await Task.WhenAll(ta, tb);
 */
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
-public async Task Transaction_Read_Version()
-{
+        [Fact]
+        public async Task Transaction_Read_Version()
+        {
             var data1 = DataGen.Person(1, 100).ToArray();
             var data2 = DataGen.Person(101, 200).ToArray();
 
@@ -247,13 +247,15 @@ public async Task Transaction_Read_Version()
             // Attempt to read from the second connection should be nothing there
             Assert.Equal(200, await asyncPerson2.CountAsync());
 
+            Assert.Equal(100, await asyncPerson3.CountAsync());
+
             await asyncDb2.CommitAsync();
 
             // Attempt to read from the second connection again should be 100 records. We shouldn't see the second lot of records because we are already in a transaction
             Assert.Equal(100, await asyncPerson3.CountAsync());
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Test_Transaction_States_Rollback_Closes_Transaction()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -281,7 +283,7 @@ public async Task Transaction_Read_Version()
             Assert.Equal("Transaction Closed, no further writes are allowed.", exception.Message);
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Test_Transaction_States_Commit_Closes_Transaction()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -309,7 +311,7 @@ public async Task Transaction_Read_Version()
             Assert.Equal("Transaction Closed, no further writes are allowed.", exception.Message);
         }
 
-        [Fact(Skip = "Temporaily skip error in LiteDb")]
+        [Fact]
         public async Task Transactions_Out_Of_Order_Disposes_Are_OK()
         {
             var connectionString = new ConnectionString()

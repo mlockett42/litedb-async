@@ -273,7 +273,7 @@ namespace LiteDB.Async
             // Make a new database
             var result = new LiteDatabaseAsync(this);
             // Begin transaction on it
-            await EnqueueAsync<bool>(() => 
+            await result.EnqueueAsync<bool>(() =>
                 UnderlyingDatabase.BeginTrans()
             );
             // Return once the new database is in transaction mode
