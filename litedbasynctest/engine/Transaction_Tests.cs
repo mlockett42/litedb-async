@@ -159,63 +159,6 @@ namespace Tests.LiteDB.Async
             // Attempt to read from the second connection again should be 100 records
             asyncPerson1 = asyncDb.GetCollection<Person>();
             Assert.Equal(200, await asyncPerson1.CountAsync());
-
-            /*
-using (var db = new LiteDatabase(new MemoryStream()))
-using (var asyncDb = new LiteDatabaseAsync(db, false))
-{
-var asyncPerson = asyncDb.GetCollection<Person>();
-var person = db.GetCollection<Person>();
-
-// init person collection with 100 document
-await asyncPerson.InsertAsync(data1);
-
-var taskASemaphore = new SemaphoreSlim(0, 1);
-var taskBSemaphore = new SemaphoreSlim(0, 1);
-
-// task A will open transaction and will insert +100 documents 
-// but will commit only 1s later - this plus +100 document must be visible only inside task A
-var ta = Task.Run(async () =>
-{
-await asyncDb.BeginTransAsync();
-
-await asyncPerson.InsertAsync(data2);
-
-                    taskBSemaphore.Release();
-                    await taskASemaphore.WaitAsync();
-
-                    var count = await asyncPerson.CountAsync();
-
-count.Should().Be(data1.Length + data2.Length);
-
-await asyncDb.CommitAsync();
-taskBSemaphore.Release();
-});
-
-// task B will not open transaction and will wait 250ms before and count collection - 
-// at this time, task A already insert +100 document but here I can't see (are not committed yet)
-// after task A finish, I can see now all 200 documents
-var tb = Task.Run(() =>
-{
-taskBSemaphore.Wait();
-
-var count = person.Count();
-
-// read 100 documents
-count.Should().Be(data1.Length);
-
-taskASemaphore.Release();
-taskBSemaphore.Wait();
-
-// read 200 documents
-count = person.Count();
-
-count.Should().Be(data1.Length + data2.Length);
-});
-
-await Task.WhenAll(ta, tb);
-}
-*/
         }
 
         [Fact]
