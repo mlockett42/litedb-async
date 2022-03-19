@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Tests.LiteDB.Async;
 using Xunit;
 
-namespace litedbasynctest
+namespace Tests.LiteDB.Async
 {
     public class MockGetCollectionTests
     {
