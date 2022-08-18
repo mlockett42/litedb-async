@@ -109,11 +109,11 @@ namespace Tests.LiteDB.Async
                 });
 
                 // try migrate to ignorecase
-                this.Invoking(async x =>
+                await this.Invoking(async x =>
                 {
                     await db.RebuildAsync(new RebuildOptions { Collation = new Collation("en-US/IgnoreCase") });
 
-                }).Should().Throw<LiteAsyncException>();
+                }).Should().ThrowAsync<LiteAsyncException>();
 
                 // test if current pragma still with collation none
                 (await db.PragmaAsync(Pragmas.COLLATION)).AsString.Should().Be("en-US/None");

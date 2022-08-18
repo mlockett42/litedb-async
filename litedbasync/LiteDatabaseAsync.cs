@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
 using LiteDB.Engine;
+using litedbasync.Utils;
 
 namespace LiteDB.Async
 {
@@ -15,17 +16,16 @@ namespace LiteDB.Async
         private readonly CancellationTokenSource _shouldTerminate = new CancellationTokenSource();
         private readonly ConcurrentQueue<Action> _queue = new ConcurrentQueue<Action>();
         private readonly bool _disposeOfWrappedDatabase = true;
-        private static HashSet<ILiteDatabase> _wrappedDatabases = new HashSet<ILiteDatabase>();
+        private static DefaultDictionary<ILiteDatabase, int> _wrappedDatabases = new DefaultDictionary<ILiteDatabase, int>();
         private static object _hashSetLock = new object();
+        private bool _isClosedTransaction = false;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
         /// </summary>
         public LiteDatabaseAsync(string connectionString, BsonMapper mapper = null)
+            : this(new ConnectionString(connectionString), mapper)
         {
-            UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
-            _backgroundThread = new Thread(BackgroundLoop);
-            _backgroundThread.Start();
         }
 
         /// <summary>
@@ -33,9 +33,19 @@ namespace LiteDB.Async
         /// </summary>
         public LiteDatabaseAsync(ConnectionString connectionString, BsonMapper mapper = null)
         {
+            _connectionString = connectionString;
             UnderlyingDatabase = new LiteDatabase(connectionString, mapper);
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
+        }
+
+        internal void VerifyNoClosedTransaction()
+        {
+            if (_isClosedTransaction)
+            {
+                throw new LiteAsyncException("Transaction Closed, no further writes are allowed.");
+            }
         }
 
         /// <summary>
@@ -48,6 +58,7 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(Stream stream, BsonMapper mapper = null, Stream logStream = null)
         {
             UnderlyingDatabase = new LiteDatabase(stream, mapper, logStream);
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
         }
@@ -60,11 +71,35 @@ namespace LiteDB.Async
         public LiteDatabaseAsync(ILiteDatabase wrappedDatabase, bool disposeOfWrappedDatabase = true)
         {
             UnderlyingDatabase = wrappedDatabase ?? throw new ArgumentNullException($"{nameof(wrappedDatabase)} cannot be null");
-            lock(_hashSetLock) {
-                if (_wrappedDatabases.Contains(UnderlyingDatabase)) {
+            RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
+            _backgroundThread = new Thread(BackgroundLoop);
+            _backgroundThread.Start();
+            _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
+        }
+
+        private static void RecordUnderlyingDatabaseInMap(ILiteDatabase underlyingDatabase)
+        {
+            lock (_hashSetLock)
+            {
+                if (_wrappedDatabases.ContainsKey(underlyingDatabase))
+                {
                     throw new LiteAsyncException("You can only have one LiteDatabaseAsync per LiteDatabase.");
                 }
-                _wrappedDatabases.Add(UnderlyingDatabase);
+                _wrappedDatabases[underlyingDatabase] = _wrappedDatabases[underlyingDatabase] + 1;
+            }
+        }
+
+        /// <summary>
+        /// This private constructor starts a transaction on the same UnderlyingDatabase as sourceDatabaseAsync. Private because it should
+        /// only be called by the BeginTransactionAsync function
+        /// </summary>
+        /// <param name="sourceDatabaseAsync"></param>
+        private LiteDatabaseAsync(ILiteDatabaseAsync sourceDatabaseAsync, bool disposeOfWrappedDatabase)
+        {
+            UnderlyingDatabase = sourceDatabaseAsync.UnderlyingDatabase;
+            lock (_hashSetLock)
+            {
+                _wrappedDatabases[UnderlyingDatabase] = _wrappedDatabases[UnderlyingDatabase] + 1;
             }
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
@@ -134,6 +169,7 @@ namespace LiteDB.Async
 
         internal Task<T> EnqueueAsync<T>(LiteAsyncDelegate<T> function)
         {
+            VerifyNoClosedTransaction();
             var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             void Function()
@@ -185,6 +221,7 @@ namespace LiteDB.Async
         #region FileStorage
 
         private ILiteStorageAsync<string> _fs = null;
+        private ConnectionString _connectionString = null;
 
         /// <summary>
         /// Returns a special collection for storage files/stream inside datafile. Use _files and _chunks collection names. FileId is implemented as string. Use "GetStorage" for custom options
@@ -206,22 +243,14 @@ namespace LiteDB.Async
 
         #region Transactions
         /// <summary>
-        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
-        /// Return true if transaction was created or false if current thread already in a transaction.
-        /// </summary>
-        public Task<bool> BeginTransAsync()
-        {
-            return EnqueueAsync(
-                () => UnderlyingDatabase.BeginTrans());
-        }
-
-        /// <summary>
         /// Commit current transaction
         /// </summary>
-        public Task<bool> CommitAsync()
+        public async Task<bool> CommitAsync()
         {
-            return EnqueueAsync(
+            var result = await EnqueueAsync(
                 () => UnderlyingDatabase.Commit());
+            _isClosedTransaction = true;
+            return result;
         }
 
         /// <summary>
@@ -229,8 +258,26 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RollbackAsync()
         {
-            return EnqueueAsync(
+            var result = EnqueueAsync(
                 () => UnderlyingDatabase.Rollback());
+            _isClosedTransaction = true;
+            return result;
+        }
+
+        /// <summary>
+        /// Initialize a new transaction. Transaction are created "per-thread". There is only one single transaction per thread.
+        /// Return true if transaction was created or false if current thread already in a transaction.
+        /// </summary>
+        public async Task<ILiteDatabaseAsync> BeginTransactionAsync()
+        {
+            // Make a new database
+            var result = new LiteDatabaseAsync(this, _disposeOfWrappedDatabase);
+            // Begin transaction on it
+            await result.EnqueueAsync<bool>(() =>
+                UnderlyingDatabase.BeginTrans()
+            );
+            // Return once the new database is in transaction mode
+            return result;
         }
 
         #endregion
@@ -331,10 +378,19 @@ namespace LiteDB.Async
                     // give the thread 5 seconds to exit... must not block forever here
                     _backgroundThread.Join(TimeSpan.FromSeconds(5));
                 }
-                lock(_hashSetLock) {
-                    _wrappedDatabases.Remove(UnderlyingDatabase);
+                int newCount;
+                lock (_hashSetLock) {
+                    newCount = _wrappedDatabases[UnderlyingDatabase] - 1;
+                    if (newCount == 0)
+                    {
+                        _wrappedDatabases.Remove(UnderlyingDatabase);
+                    }
+                    else
+                    {
+                        _wrappedDatabases[UnderlyingDatabase] = newCount;
+                    }
                 }
-                if (_disposeOfWrappedDatabase) {
+                if (_disposeOfWrappedDatabase && newCount == 0) {
                     UnderlyingDatabase.Dispose();
                 }
             }

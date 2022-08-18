@@ -4,11 +4,12 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LiteDB;
 using LiteDB.Async;
 using Tests.LiteDB.Async;
 using Xunit;
 
-namespace LiteDB.Tests.Database
+namespace Tests.LiteDB.Async
 {
     public class Storage_Tests
     {

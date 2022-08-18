@@ -12,7 +12,8 @@ namespace LiteDB.Async
         public Task<int> CountAsync()
         {
             return Database.EnqueueAsync(
-                () => UnderlyingCollection.Count());
+                () => UnderlyingCollection.Count()
+                );
         }
 
         /// <summary>

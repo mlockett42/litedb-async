@@ -20,7 +20,7 @@ namespace Tests.LiteDB.Async
 
                 var col = db.GetCollection("col");
 
-                await col.InsertAsync(new BsonDocument {["a"] = 1});
+                await col.InsertAsync(new BsonDocument { ["a"] = 1 });
 
                 (await db.GetCollectionNamesAsync()).Should().Contain("col");
 

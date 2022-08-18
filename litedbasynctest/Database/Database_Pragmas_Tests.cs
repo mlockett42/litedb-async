@@ -6,7 +6,7 @@ using FluentAssertions;
 using Xunit;
 using System.Globalization;
 
-namespace LiteDB.Tests.Database
+namespace Tests.LiteDB.Async
 {
     public class Database_Pragmas_Tests
     {

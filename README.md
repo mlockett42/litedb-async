@@ -62,6 +62,21 @@ You can use Linq
 var theSmiths = await collection.Query().Where(x => x.Lastname == "Smith").ToListAsync();
 ```
 
+### Transactions
+
+Use the BeginTransaction method to start a transaction
+```
+using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
+```
+
+Operations run on asyncDb2 are now isolated from asyncDb1. They can also be rolled back, or if your program exits without call CommitAsync they are lost.
+
+To commit
+```
+await asyncDb2.CommitAsync();
+```
+
 ### Supported API
 
 Almost all functions from LiteDb have an async replacement
@@ -87,6 +102,10 @@ The constructor LiteDatabaseAsync opens and wraps a LiteDB instant. It also star
 When a function that causes an evaluation is called it sends a message to the background thread, where the required action is performed by the LiteDb instance. The result is then return to the calling thread when the function in the background completes. If the function in the background thread causes an exception it is caught and a LiteAsyncException is raised. The original exception is preserved as the InnerException.
 
 Each class or interface in the LiteDb library has an equivalent in the LiteDb.Async library. Each function that returns a task is named with the async suffix. You can then call LiteDb.ASync methods using similar syntax to calling async functions in EF Core.
+
+### How do transactions work?
+A new database obejct is created and connects to the same source, the new database object also creates a new background worker thread for itself.
+It then calls the underlying LiteDb.BeginTrans function to use LiteDb's transaction functionality.
 
 
 ## Building
