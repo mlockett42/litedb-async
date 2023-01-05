@@ -1,6 +1,6 @@
 # litedb-async
 
-This library allows the use of asynchronous programming techniques with the LiteDb library. It is intended for Xamarin and WPF applications that require or would benefit a light weight NoSQL database but also don't want to open an manage lots of threads or block the UI while database operations are occuring.
+This library allows the use of asynchronous programming techniques with the LiteDb library. It is intended for Xamarin and WPF applications that require or would benefit a lightweight NoSQL database but also don't want to open and manage lots of threads or block the UI while database operations are occuring.
 
 We manage the thread for you.
 
@@ -104,7 +104,7 @@ When a function that causes an evaluation is called it sends a message to the ba
 Each class or interface in the LiteDb library has an equivalent in the LiteDb.Async library. Each function that returns a task is named with the async suffix. You can then call LiteDb.ASync methods using similar syntax to calling async functions in EF Core.
 
 ### How do transactions work?
-A new database obejct is created and connects to the same source, the new database object also creates a new background worker thread for itself.
+A new database object is created and connects to the same source, the new database object also creates a new background worker thread for itself.
 It then calls the underlying LiteDb.BeginTrans function to use LiteDb's transaction functionality.
 
 
