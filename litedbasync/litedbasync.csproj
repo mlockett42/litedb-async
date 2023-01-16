@@ -12,6 +12,8 @@
     <RepositoryType>git</RepositoryType>
     <Description>LiteDB.Async - A lightweight async wrapper for LiteDB</Description>
     <Summary>LiteDB.Async - A lightweight async wrapper for LiteDB</Summary>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>litedb_asysnc_strong_name_key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
