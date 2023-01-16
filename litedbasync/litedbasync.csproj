@@ -5,7 +5,7 @@
     <Authors>Mark Lockett</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Title>LiteDB-Async</Title>
-    <Copyright>Copyright (c) 2020 Licensed by Apache 2.0</Copyright>
+    <Copyright>Copyright (c) 2020 - 2023 Licensed by Apache 2.0</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/mlockett42/litedb-async</RepositoryUrl>
     <ProjectUrl>https://github.com/mlockett42/litedb-async</ProjectUrl>
