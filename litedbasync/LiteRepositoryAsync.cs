@@ -338,6 +338,8 @@ namespace LiteDB.Async
         {
             if (disposing)
             {
+                // Ensure UnderlyingDatabase is immediately disposed of..._
+                _db.UnderlyingDatabase.Dispose();
                 _db.Dispose();
             }
         }
