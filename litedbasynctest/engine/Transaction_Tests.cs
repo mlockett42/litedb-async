@@ -55,7 +55,7 @@ namespace Tests.LiteDB.Async
             }
         }
 
-        [Fact(Skip = "Transaction behaviour has change between v5.0.15 and v5.0.16")]
+        [Fact]
         public async Task Transaction_Write_Lock_Timeout()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -63,20 +63,18 @@ namespace Tests.LiteDB.Async
             var connectionString = new ConnectionString()
             {
                 Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
-                Connection = ConnectionType.Shared,
+                Connection = ConnectionType.Direct,
                 Password = "hunter2"
             };
 
             using var asyncDb1 = new LiteDatabaseAsync(connectionString);
             using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
-            using var asyncDb3 = new LiteDatabaseAsync(connectionString);
-            using var asyncDb4 = await asyncDb3.BeginTransactionAsync();
+            using var asyncDb3 = await asyncDb1.BeginTransactionAsync();
 
             // small timeout
             await asyncDb1.PragmaAsync(Pragmas.TIMEOUT, 1);
             await asyncDb2.PragmaAsync(Pragmas.TIMEOUT, 1);
             await asyncDb3.PragmaAsync(Pragmas.TIMEOUT, 1);
-            await asyncDb4.PragmaAsync(Pragmas.TIMEOUT, 1);
 
             var asyncPerson2 = asyncDb2.GetCollection<Person>();
             // Add 100 more records
@@ -93,7 +91,7 @@ namespace Tests.LiteDB.Async
             Assert.StartsWith("LiteDb encounter an error.", exception.Message);
         }
 
-        [Fact(Skip = "Transaction behaviour has change between v5.0.15 and v5.0.16")]
+        [Fact]
         public async Task Transaction_Avoid_Dirty_Read_Rollback()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -102,7 +100,7 @@ namespace Tests.LiteDB.Async
             var connectionString = new ConnectionString()
             {
                 Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
-                Connection = ConnectionType.Shared,
+                Connection = ConnectionType.Direct,
                 Password = "hunter2"
             };
 
@@ -128,7 +126,7 @@ namespace Tests.LiteDB.Async
             Assert.Equal(100, await asyncPerson1.CountAsync());
         }
 
-        [Fact(Skip = "Transaction behaviour has change between v5.0.15 and v5.0.16")]
+        [Fact]
         public async Task Transaction_Avoid_Dirty_Read()
         {
             var data1 = DataGen.Person(1, 100).ToArray();
@@ -137,7 +135,7 @@ namespace Tests.LiteDB.Async
             var connectionString = new ConnectionString()
             {
                 Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
-                Connection = ConnectionType.Shared,
+                Connection = ConnectionType.Direct,
                 Password = "hunter2"
             };
 
