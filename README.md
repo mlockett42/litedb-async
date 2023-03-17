@@ -72,6 +72,8 @@ using var asyncDb2 = await asyncDb1.BeginTransactionAsync();
 
 Operations run on asyncDb2 are now isolated from asyncDb1. They can also be rolled back, or if your program exits without call CommitAsync they are lost.
 
+From version 5.0.16 of LiteDb we started to have problems with transactions on Shared connections. Therefore will be recommending Direct connections from LiteDb.Async version 0.1.6 goind forward.
+
 To commit
 ```
 await asyncDb2.CommitAsync();
