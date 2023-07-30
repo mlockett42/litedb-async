@@ -13,7 +13,7 @@
     <Description>LiteDB.Async - A lightweight async wrapper for LiteDB</Description>
     <Summary>LiteDB.Async - A lightweight async wrapper for LiteDB</Summary>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>LiteDBAsysncStrongNameKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>LiteDBAsyncStrongNameKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
