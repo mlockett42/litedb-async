@@ -59,7 +59,7 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public void Disposes_Wrapped_LiteDb()
+        public void Disposes_Wrapped_LiteDB()
         {
             var mockWrappedDb = new Mock<ILiteDatabase>();
             using (var db = new LiteDatabaseAsync(mockWrappedDb.Object))
@@ -70,7 +70,7 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public void Dont_Dispose_Wrapped_LiteDb()
+        public void Dont_Dispose_Wrapped_LiteDB()
         // Don't dispose of the wrapped LiteDB instance if the correct parameter is passed in
         {
             var mockWrappedDb = new Mock<ILiteDatabase>();
@@ -82,7 +82,7 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public void Only_One_LiteDbAsync_Per_LiteDb()
+        public void Only_One_LiteDbAsync_Per_LiteDB()
         {
             using (var wrappedDb = new LiteDatabase(new MemoryStream()) )
             using (var db1 = new LiteDatabaseAsync(wrappedDb)) {
@@ -92,7 +92,7 @@ namespace Tests.LiteDB.Async
         }
 
         [Fact]
-        public void Can_Wrap_LiteDb_Twice()
+        public void Can_Wrap_LiteDB_Twice()
         {
             var mockWrappedDb = new Mock<ILiteDatabase>();
             using (var db = new LiteDatabaseAsync(mockWrappedDb.Object, false))

@@ -180,7 +180,7 @@ namespace LiteDB.Async
                 }
                 catch (Exception ex)
                 {
-                    tcs.SetException(new LiteAsyncException("LiteDb encounter an error. Details in the inner exception.", ex));
+                    tcs.SetException(new LiteAsyncException("LiteDB encounter an error. Details in the inner exception.", ex));
                 }
             }
 

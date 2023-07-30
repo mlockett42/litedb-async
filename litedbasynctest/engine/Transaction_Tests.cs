@@ -88,7 +88,7 @@ namespace Tests.LiteDB.Async
                 await asyncPerson3.InsertAsync(data1);
 
             });
-            Assert.StartsWith("LiteDb encounter an error.", exception.Message);
+            Assert.StartsWith("LiteDB encounter an error.", exception.Message);
         }
 
         [Fact]
