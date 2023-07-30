@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <AssemblyName>litedbasynctest</AssemblyName>
-    <RootNamespace>litedbasynctest</RootNamespace>
+    <AssemblyName>LiteDB.Async.Test</AssemblyName>
+    <RootNamespace>Tests.LiteDB.Async</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>

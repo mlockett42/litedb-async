@@ -12,7 +12,7 @@ namespace Tests.LiteDB.Async
         /// </summary>
         public static IEnumerable<Person> Person()
         {
-            using (var stream = typeof(DataGen).Assembly.GetManifestResourceStream("litedbasynctest.Utils.Json.person.json"))
+            using (var stream = typeof(DataGen).Assembly.GetManifestResourceStream("Tests.LiteDB.Async.Utils.Json.person.json"))
             {
                 var reader = new StreamReader(stream);
 
@@ -57,7 +57,7 @@ namespace Tests.LiteDB.Async
         /// </summary>
         public static IEnumerable<Zip> Zip()
         {
-            using (var stream = typeof(DataGen).Assembly.GetManifestResourceStream("litedbasynctest.Utils.Json.zip.json"))
+            using (var stream = typeof(DataGen).Assembly.GetManifestResourceStream("Tests.LiteDB.Async.Utils.Json.zip.json"))
             {
                 var reader = new StreamReader(stream);
 
