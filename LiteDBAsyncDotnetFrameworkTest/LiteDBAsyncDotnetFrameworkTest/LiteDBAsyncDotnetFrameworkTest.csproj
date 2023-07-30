@@ -43,7 +43,7 @@
       <HintPath>..\packages\LiteDB.5.0.15\lib\net45\LiteDB.dll</HintPath>
     </Reference>
     <Reference Include="litedbasync, Version=0.1.4.0, Culture=neutral, PublicKeyToken=50ce414c90e8fc92, processorArchitecture=MSIL">
-      <HintPath>..\packages\LiteDB.Async.0.1.4\lib\netstandard2.0\litedbasync.dll</HintPath>
+      <HintPath>..\packages\LiteDB.Async.0.1.4\lib\netstandard2.0\LiteDBAsync.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

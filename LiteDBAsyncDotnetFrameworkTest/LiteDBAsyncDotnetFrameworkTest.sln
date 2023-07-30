@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "litedb_async_dotnet_framework_test", "litedb_async_dotnet_framework_test\litedb_async_dotnet_framework_test.csproj", "{4714D0C3-627E-487D-9E30-65B24BCEB668}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteDBAsyncDotnetFrameworkTest", "LiteDBAsyncDotnetFrameworkTest\LiteDBAsyncDotnetFrameworkTest.csproj", "{4714D0C3-627E-487D-9E30-65B24BCEB668}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
