@@ -19,6 +19,7 @@ namespace LiteDB.Async
         private static DefaultDictionary<ILiteDatabase, int> _wrappedDatabases = new DefaultDictionary<ILiteDatabase, int>();
         private static object _hashSetLock = new object();
         private bool _isClosedTransaction = false;
+        private bool _isTransaction;
 
         /// <summary>
         /// Starts LiteDB database using a connection string for file system database
@@ -38,6 +39,7 @@ namespace LiteDB.Async
             RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
+            _isTransaction = false;
         }
 
         internal void VerifyNoClosedTransaction()
@@ -61,6 +63,7 @@ namespace LiteDB.Async
             RecordUnderlyingDatabaseInMap(UnderlyingDatabase);
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
+            _isTransaction = false;
         }
 
         /// <summary>
@@ -75,6 +78,7 @@ namespace LiteDB.Async
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
+            _isTransaction = false;
         }
 
         private static void RecordUnderlyingDatabaseInMap(ILiteDatabase underlyingDatabase)
@@ -104,6 +108,7 @@ namespace LiteDB.Async
             _backgroundThread = new Thread(BackgroundLoop);
             _backgroundThread.Start();
             _disposeOfWrappedDatabase = disposeOfWrappedDatabase;
+            _isTransaction = true;
         }
 
         /// <summary>
@@ -247,6 +252,10 @@ namespace LiteDB.Async
         /// </summary>
         public async Task<bool> CommitAsync()
         {
+            if (_isTransaction == false)
+            {
+                throw new LiteAsyncException("Not a transaction, commit not allowed.");
+            }
             var result = await EnqueueAsync(
                 () => UnderlyingDatabase.Commit());
             _isClosedTransaction = true;
@@ -258,6 +267,10 @@ namespace LiteDB.Async
         /// </summary>
         public Task<bool> RollbackAsync()
         {
+            if (_isTransaction == false)
+            {
+                throw new LiteAsyncException("Not a transaction, rollback not allowed.");
+            }
             var result = EnqueueAsync(
                 () => UnderlyingDatabase.Rollback());
             _isClosedTransaction = true;

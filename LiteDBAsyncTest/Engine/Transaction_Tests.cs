@@ -271,5 +271,49 @@ namespace Tests.LiteDB.Async
             asyncDb.Dispose();
             transDb.Dispose();
         }
+
+        [Fact]
+        public async Task Test_Rollback_Fails_If_Not_In_Transaction()
+        {
+            var data1 = DataGen.Person(1, 100).ToArray();
+
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+
+            var asyncPerson1 = asyncDb1.GetCollection<Person>();
+            await asyncPerson1.InsertAsync(data1);
+
+            var exception = await Assert.ThrowsAsync<LiteAsyncException>(asyncDb1.RollbackAsync);
+
+            Assert.Equal("Not a transaction, rollback not allowed.", exception.Message);
+        }
+
+        [Fact]
+        public async Task Test_Commit_Fails_If_Not_In_Transaction()
+        {
+            var data1 = DataGen.Person(1, 100).ToArray();
+
+            var connectionString = new ConnectionString()
+            {
+                Filename = Path.Combine(Path.GetTempPath(), "litedbn-async-testing-" + Path.GetRandomFileName() + ".db"),
+                Connection = ConnectionType.Shared,
+                Password = "hunter2"
+            };
+
+            using var asyncDb1 = new LiteDatabaseAsync(connectionString);
+
+            var asyncPerson1 = asyncDb1.GetCollection<Person>();
+            await asyncPerson1.InsertAsync(data1);
+
+            var exception = await Assert.ThrowsAsync<LiteAsyncException>(asyncDb1.CommitAsync);
+
+            Assert.Equal("Not a transaction, commit not allowed.", exception.Message);
+        }
     }
 }
